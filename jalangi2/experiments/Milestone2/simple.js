@@ -1,4 +1,5 @@
 var tools = require("./tools.js");
+const util = require("util");
 
 (function (sandbox) {
   var defUse = new tools.DefUse();
@@ -61,17 +62,21 @@ var tools = require("./tools.js");
         isArgument,
         isCatchParam
       );
-      defUse.pushDef({
-        name: name,
-        location: iidToLocation(iid),
-        uses: [],
-      });
+      // defUse.pushDef({
+      //   name: name,
+      //   operation: "def",
+      //   location: iidToLocation(iid),
+      //   line: line,
+      //   uses: [],
+      // });
     },
     read: function (iid, name, val, isGlobal, isScriptLocal) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       defUse.pushRead({
         name: name,
+        operation: "read",
         location: iidToLocation(iid),
+        line: line,
       });
       console.log("Read: ", iidToLocation(getGlobalIID(iid)), name);
     },
@@ -80,7 +85,9 @@ var tools = require("./tools.js");
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       defUse.pushWrite({
         name: name,
+        operation: "write",
         location: iidToLocation(iid),
+        line: line,
         uses: [],
       });
       console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
@@ -91,15 +98,22 @@ var tools = require("./tools.js");
         return false;
       }
     },
+    invokeFunPre: function (iid, f, base, args) {
+      // TODO: check if this messes up variable reads
+      if (f == console.log) {
+        return { f: f, base: base, args: args, skip: true };
+      }
+    },
     /**
      * This callback is called when an execution terminates in node.js.
      */
     endExecution: function () {
       // console.log(variables);
-      console.log(defUse.defUse);
+      // console.log(util.inspect(defUse.defUse, { depth: 4 }));
       // console.log(sandbox.smap);
-      console.log(sandbox);
+      // console.log(sandbox);
+      // console.log(defUse.getLines());
     },
-    //node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis simple.js example.js
+    //node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis simple.js example.js --astHandlerModule ast.js
   };
 })(J$);

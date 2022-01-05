@@ -25,8 +25,24 @@ function DefUse() {
     }
     return foundEntries;
   };
+
+  this.flatten = function () {
+    var lines = [];
+    for (const entry of this.defUse) {
+      if (!lines.includes(entry.line)) {
+        lines.push(entry.line);
+      }
+    }
+    return lines;
+  }
+}
+
+function ASTHANDLER() {
+  console.log("ASDKJAHSLKDJHASLKJDHALSKJHDLAKS");  
+  return "ASDASDLKÑASJDLÑAKSJDLÑAKJSDLK";
 }
 
 module.exports = {
   DefUse,
+  ASTHANDLER
 };
