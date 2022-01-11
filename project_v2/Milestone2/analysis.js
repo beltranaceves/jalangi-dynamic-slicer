@@ -1,8 +1,49 @@
-var tools = require("./tools.js");
-const util = require("util");
+// var tools = require("./tools.js"); // TODO: Come back and use this instead of inline script
+// const util = require("util");
+
+
+function DefUse() {
+  this.defUse = [];
+
+  this.pushDef = function (definition) {
+    this.defUse.push(definition);
+  };
+
+  this.pushWrite = function (write) {
+    this.defUse.push(write);
+  };
+
+  this.pushRead = function (read) {
+    var entries = this.findByName(read.name);
+    for (const entry of entries) {
+      entry.uses.push(read);
+    }
+  };
+
+  this.findByName = function (name) {
+    var foundEntries = [];
+    for (const entry of this.defUse) {
+      if (entry.name == name) {
+        foundEntries.push(entry);
+      }
+    }
+    return foundEntries;
+  };
+
+  this.flatten = function () {
+    var lines = [];
+    for (const entry of this.defUse) {
+      if (!lines.includes(entry.line)) {
+        lines.push(entry.line);
+      }
+    }
+    return lines;
+  }
+}
+
 
 (function (sandbox) {
-  var defUse = new tools.DefUse();
+  var defUse = new DefUse();
   var variables = "";
   var iidToLocation = sandbox.iidToLocation;
   var getGlobalIID = sandbox.getGlobalIID;
