@@ -1,0 +1,15 @@
+{
+  "name": "dynamic-slicer",
+  "version": "1.0.0",
+  "description": "Jalangi2 based Dynamic Slicer form ES5",
+  "main": "slice.js",
+  "dependencies": {
+    "argparse": "^2.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Beltrán Aceves Gil",
+  "license": "ISC"
+}
