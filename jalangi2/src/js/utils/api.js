@@ -249,3 +249,8 @@ function analyze(script, clientAnalyses, initParam) {
 exports.instrumentString = instrumentString;
 exports.instrumentDir = instrumentDir;
 exports.analyze = analyze;
+// module.exports = {
+//     instreumentString,
+//     instrumentDir, 
+//     analyze
+// }
