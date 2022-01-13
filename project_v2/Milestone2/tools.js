@@ -5,21 +5,26 @@ function DefUse() {
     this.defUse.push(definition);
   };
 
-  this.pushWrite = function (write) {
-    this.defUse.push(write);
-  };
+  this.pushNode = function (node) {
+    var prev = this.getPreviousOcurrences(node);
+    node.prev = prev;
+    this.defUse.push(node);
+  }
 
-  this.pushRead = function (read) {
-    var entries = this.findByName(read.name);
-    for (const entry of entries) {
-      entry.uses.push(read);
+  this.getPreviousOcurrences = function (node) {
+    var nodes = [];
+    for (const entry of this.defUse) {
+      if (entry.name == node.name && entry.line <= node.line && entry.operation == "write") {
+        nodes.push(entry);
+      }
     }
-  };
+    return nodes;
+  }
 
-  this.findByName = function (name) {
+  this.findByLine = function (line) {
     var foundEntries = [];
     for (const entry of this.defUse) {
-      if (entry.name == name) {
+      if (entry.line == line) {
         foundEntries.push(entry);
       }
     }
@@ -37,12 +42,6 @@ function DefUse() {
   }
 }
 
-function ASTHANDLER() {
-  console.log("ASDKJAHSLKDJHASLKJDHALSKJHDLAKS");  
-  return "ASDASDLKÑASJDLÑAKSJDLÑAKJSDLK";
-}
-
 module.exports = {
-  DefUse,
-  ASTHANDLER
+  DefUse
 };

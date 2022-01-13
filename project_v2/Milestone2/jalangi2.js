@@ -126,14 +126,14 @@ function startProgram() {
   process.argv = newArgs;
   // this assumes that the endExecution() callback of the analysis
   // does not make any asynchronous calls
-  process.on("exit", function () {
+  process.on("exit", function () { // TODO: go back to this and make sure its true, if not move the endExecution to astHandler ending
     J$.endExecution();
   });
 
   J$.initParams = {
     inFile: "example.js", // TODO make generic
     outFile: "exampleFix.js",
-    lineNb: 2,
+    lineNb: 8,
   };
   Module.Module.runMain(script, null, true);
 }

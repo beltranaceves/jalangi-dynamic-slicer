@@ -72,23 +72,22 @@ const astHandler = require("./astHandler.js");
     },
     read: function (iid, name, val, isGlobal, isScriptLocal) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
-      defUse.pushRead({
+      defUse.pushNode({
         name: name,
         operation: "read",
         location: iidToLocation(iid),
-        line: line,
+        line: parseInt(line)
       });
-      console.log("Read: ", iidToLocation(getGlobalIID(iid)), name);
+      console.log("Read: ", line, name, val, isGlobal);
     },
     write: function (iid, name, val, lhs, isGlobal, isScriptLocal) {
       variables += `${val}\n`;
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
-      defUse.pushWrite({
+      defUse.pushNode({
         name: name,
         operation: "write",
         location: iidToLocation(iid),
-        line: line,
-        uses: [],
+        line: parseInt(line)
       });
       console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
     },
@@ -112,10 +111,12 @@ const astHandler = require("./astHandler.js");
       // console.log(util.inspect(defUse.defUse, { depth: 4 }));
       // console.log(sandbox.smap);
       // console.log(sandbox);
+      // console.log();
       var inFile = J$.initParams.inFile;
       var outFile = J$.initParams.outFile;
       var lineNb = J$.initParams.lineNb;
-      astHandler.sliceCode(defUse, inFile, outFile, lineNb);
+      console.log(J$);
+      astHandler.sliceCode(defUse, inFile, outFile, lineNb, J$.iids.code);
 
     },
     //node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js --astHandlerModule ast.js

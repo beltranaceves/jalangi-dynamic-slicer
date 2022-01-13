@@ -1,10 +1,11 @@
 function sliceMe() {
-    var x = 5;
+    var x;
     var y;
-    console.log("Hello World");
-    if (x < 10)
-        x = x + 5;
-    y = 0;
-    return y;
-    }
+    var z;
+    x = 1;
+    y = 2;
+    z = x + y;
+    return x;
+}
+
 sliceMe();
