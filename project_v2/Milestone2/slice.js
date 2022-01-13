@@ -1,4 +1,4 @@
-const jalangi = require("../../../jalangi2/src/js/utils/api.js");
+const jalangi = require("../../src/js/utils/api.js");
 const fs = require("fs");
 var analysis = fs.readFileSync("./analysis.js").toString();
 
@@ -33,7 +33,7 @@ var analysis = fs.readFileSync("./analysis.js").toString();
       }
       var instrumentedCode = jalangi.instrumentString(code);
 
-      let analysisResult = jalangi.analyze(instrumentedCode, [analysis]);
+      let analysisResult = jalangi.analyze(instrumentedCode, ["C:/software/jalangi-dynamic-slicer/project_v2/Milestone2/analysis.js"]);
       analysisResult
         .then((result) => {
           console.log("PATATA");

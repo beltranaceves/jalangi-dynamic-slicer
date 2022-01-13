@@ -1,12 +1,12 @@
 var tools = require("./tools.js"); // TODO: Come back and use this instead of inline script
 const util = require("util");
+const astHander = require("./astHandler.js");
 
 (function (sandbox) {
   var defUse = new tools.DefUse();
   var variables = "";
   var iidToLocation = sandbox.iidToLocation;
   var getGlobalIID = sandbox.getGlobalIID;
-
   function getKeyByValue(object, value) {
     value = value.map((entry) => {
       return parseInt(entry);
@@ -93,7 +93,7 @@ const util = require("util");
       console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
     },
     invokeFun: function (iid, f, base, args, val, isConstructor) {
-      console.log("Function call: ", f);
+      // console.log("Function call: ", f);
       if (f == console.log) {
         return false;
       }
@@ -112,7 +112,7 @@ const util = require("util");
       // console.log(util.inspect(defUse.defUse, { depth: 4 }));
       // console.log(sandbox.smap);
       // console.log(sandbox);
-      // console.log(defUse.getLines());
+      J$.results = defUse;
     },
     //node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js --astHandlerModule ast.js
     // node ../src/js/commands/jalangi.js

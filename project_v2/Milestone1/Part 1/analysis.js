@@ -36,6 +36,6 @@
     endExecution: function () {
       console.log(variables);
     }
-    //node ../../../jalangi2/src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js
+    //node ../../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js
   };
 })();
