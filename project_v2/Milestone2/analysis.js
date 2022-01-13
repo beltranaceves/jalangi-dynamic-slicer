@@ -1,6 +1,6 @@
 var tools = require("./tools.js"); // TODO: Come back and use this instead of inline script
 const util = require("util");
-const astHander = require("./astHandler.js");
+const astHandler = require("./astHandler.js");
 
 (function (sandbox) {
   var defUse = new tools.DefUse();
@@ -112,7 +112,11 @@ const astHander = require("./astHandler.js");
       // console.log(util.inspect(defUse.defUse, { depth: 4 }));
       // console.log(sandbox.smap);
       // console.log(sandbox);
-      J$.results = defUse;
+      var inFile = J$.initParams.inFile;
+      var outFile = J$.initParams.outFile;
+      var lineNb = J$.initParams.lineNb;
+      astHandler.sliceCode(defUse, inFile, outFile, lineNb);
+
     },
     //node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js --astHandlerModule ast.js
     // node ../src/js/commands/jalangi.js

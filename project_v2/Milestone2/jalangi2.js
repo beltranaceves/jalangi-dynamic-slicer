@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-var output = "";
 /*
  * Copyright 2014 Samsung Information Systems America, Inc.
  *
@@ -24,7 +23,7 @@ var output = "";
 /*global J$ */
 
 // var argparse = require('argparse');
-var instUtil = require('../../src/js/instrument/instUtil.js');
+var instUtil = require("../../src/js/instrument/instUtil.js");
 // var parser = new argparse.ArgumentParser({
 //     addHelp: true,
 //     description: "Command-line utility to perform Jalangi2's instrumentation and analysis"
@@ -43,92 +42,104 @@ var args = {};
 var astHandler = null;
 args.inlineIID = true;
 args.inlineSource = true;
-args.script_and_args= ["example.js"] //TODO make generic file
-args.analysis = ["analysis.js"] // TODO make generic too
+args.script_and_args = ["example.js"]; //TODO make generic file
+args.analysis = ["analysis.js"]; // TODO make generic too
 if (args.astHandlerModule) {
-    astHandler = require(args.astHandlerModule);
+  astHandler = require(args.astHandlerModule);
 }
 
 if (args.script_and_args.length === 0) {
-    console.error("must provide script to record");
-    process.exit(1);
+  console.error("must provide script to record");
+  process.exit(1);
 }
 // we shift here so we can use the rest of the array later when
 // hacking process.argv; see below
 var script = args.script_and_args.shift();
 
-var Module = require('module');
-var path = require('path');
-var fs = require('fs');
-var originalLoader = Module._extensions['.js'];
+var Module = require("module");
+var path = require("path");
+var fs = require("fs");
+const { listenerCount } = require("process");
+var originalLoader = Module._extensions[".js"];
 var FILESUFFIX1 = "_jalangi_";
 
 function makeInstCodeFileName(name) {
-    return name.replace(/.js$/, FILESUFFIX1 + ".js").replace(/.html$/, FILESUFFIX1 + ".html");
+  return name
+    .replace(/.js$/, FILESUFFIX1 + ".js")
+    .replace(/.html$/, FILESUFFIX1 + ".html");
 }
 
 function makeSMapFileName(name) {
-    return name.replace(/.js$/, ".json");
+  return name.replace(/.js$/, ".json");
 }
 
 acorn = require("acorn");
 esotope = require("esotope");
-require('../../src/js/headers').headerSources.forEach(function (header) {
-    require("../../" + header);
+require("../../src/js/headers").headerSources.forEach(function (header) {
+  require("../../" + header);
 });
 
 var initParam = null;
 if (args.initParam) {
-    initParam = {};
-    args.initParam.forEach(function (keyVal) {
-        var split = keyVal.split(':');
-        if (split.length !== 2) {
-            throw new Error("invalid initParam " + keyVal);
-        }
-        initParam[split[0]] = split[1];
-    });
+  initParam = {};
+  args.initParam.forEach(function (keyVal) {
+    var split = keyVal.split(":");
+    if (split.length !== 2) {
+      throw new Error("invalid initParam " + keyVal);
+    }
+    initParam[split[0]] = split[1];
+  });
 }
 J$.initParams = initParam || {};
 if (args.analysis) {
-    args.analysis.forEach(function (src) {
-        require(path.resolve(src));
-    });
+  args.analysis.forEach(function (src) {
+    require(path.resolve(src));
+  });
 }
 
-Module._extensions['.js'] = function (module, filename) {
-    var code = fs.readFileSync(filename, 'utf8');
-    var instFilename = makeInstCodeFileName(filename);
-    var instCodeAndData = J$.instrumentCode(
-        {
-            code: code,
-            isEval: false,
-            origCodeFileName: filename,
-            instCodeFileName: instFilename,
-            inlineSourceMap: !!args.inlineIID,
-            inlineSource: !!args.inlineSource
-        });
-    instUtil.applyASTHandler(instCodeAndData, astHandler, J$);
-    fs.writeFileSync(makeSMapFileName(instFilename), instCodeAndData.sourceMapString, "utf8");
-    fs.writeFileSync(instFilename, instCodeAndData.code, "utf8");
-    module._compile(instCodeAndData.code, filename);
+Module._extensions[".js"] = function (module, filename) {
+  var code = fs.readFileSync(filename, "utf8");
+  var instFilename = makeInstCodeFileName(filename);
+  var instCodeAndData = J$.instrumentCode({
+    code: code,
+    isEval: false,
+    origCodeFileName: filename,
+    instCodeFileName: instFilename,
+    inlineSourceMap: !!args.inlineIID,
+    inlineSource: !!args.inlineSource,
+  });
+  instUtil.applyASTHandler(instCodeAndData, astHandler, J$);
+  fs.writeFileSync(
+    makeSMapFileName(instFilename),
+    instCodeAndData.sourceMapString,
+    "utf8"
+  );
+  fs.writeFileSync(instFilename, instCodeAndData.code, "utf8");
+  module._compile(instCodeAndData.code, filename);
 };
 
 function startProgram() {
-    // hack process.argv for the child script
-    script = path.resolve(script);
-    var newArgs = [process.argv[0], script];
-    newArgs = newArgs.concat(args.script_and_args);
-    process.argv = newArgs;
-    // this assumes that the endExecution() callback of the analysis
-    // does not make any asynchronous calls
-    process.on('exit', function () { 
-        console.log(J$);
-        J$.endExecution(); });
-    Module.Module.runMain(script, null, true);
+  // hack process.argv for the child script
+  script = path.resolve(script);
+  var newArgs = [process.argv[0], script];
+  newArgs = newArgs.concat(args.script_and_args);
+  process.argv = newArgs;
+  // this assumes that the endExecution() callback of the analysis
+  // does not make any asynchronous calls
+  process.on("exit", function () {
+    J$.endExecution();
+  });
+
+  J$.initParams = {
+    inFile: "example.js", // TODO make generic
+    outFile: "exampleFix.js",
+    lineNb: 2,
+  };
+  Module.Module.runMain(script, null, true);
 }
 
 if (J$.analysis && J$.analysis.onReady) {
-    J$.analysis.onReady(startProgram);
+  J$.analysis.onReady(startProgram);
 } else {
-    startProgram();
+  startProgram();
 }
