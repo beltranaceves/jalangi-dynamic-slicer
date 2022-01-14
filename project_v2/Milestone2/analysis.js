@@ -91,7 +91,28 @@ const astHandler = require("./astHandler.js");
       });
       // console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
     },
-    invokeFun: function (iid, f, base, args, val, isConstructor) {
+    getField: function(iid, base, offset, val, isComputed, isOpAssign, isMethodCall) {
+      var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
+      defUse.pushNode({
+        name: offset,
+        operation: "read",
+        location: iidToLocation(iid),
+        line: parseInt(line)
+      });
+      // console.log("Read: ", line, base, offset, val, isComputed, isOpAssign, isMethodCall);
+    },
+    putField: function(iid, base, offset, val, isComputed, isOpAssign) {
+      variables += `${val}\n`;
+      var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
+      defUse.pushNode({
+        name: offset,
+        operation: "write",
+        location: iidToLocation(iid),
+        line: parseInt(line)
+      });
+      // console.log("Write: ", line,  base, offset, val, isComputed, isOpAssign);
+    },
+    invokeFun: function (iid, f, base, args, val, isConstructor) { // TODO choose one of these and delete the other
       // console.log("Function call: ", f);
       if (f == console.log) {
         return false;

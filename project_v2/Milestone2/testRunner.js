@@ -17,6 +17,9 @@
 	function compare(originalFile, predictedFile){
 		expectedSlice = readFile(originalFile);
 		predictedSlice = readFile(predictedFile);
+		expectedSlice = expectedSlice.replace(/\s/g, "");
+		predictedSlice = predictedSlice.replace(/\s/g, "");
+
 
 		if (expectedSlice === predictedSlice){
 			console.log("exact match");
