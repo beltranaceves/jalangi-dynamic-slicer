@@ -1,6 +1,4 @@
-const jalangi = require("../../src/js/utils/api.js");
-const fs = require("fs");
-var analysis = fs.readFileSync("./analysis.js").toString();
+const jalangi = require("./jalangi2.js");
 
 (function () {
   const { ArgumentParser } = require("argparse");
@@ -23,25 +21,19 @@ var analysis = fs.readFileSync("./analysis.js").toString();
   const args = parser.parse_args();
 
   async function slice(inFile, outFile, lineNb) {
-    /*
-        TODO: Implement your method that slices the input based on the specified criteria
-        */
-    fs.readFile(inFile, "utf8", (err, code) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      var instrumentedCode = jalangi.instrumentString(code);
+    var args = {};
+    args.inlineIID = true;
+    args.inlineSource = true;
+    args.script_and_args = [inFile];
+    args.inFile = inFile;
+    args.outFile = outFile;
+    args.lineNb = parseInt(lineNb),
+    args.analysis = ["analysis.js"];
 
-      let analysisResult = jalangi.analyze(instrumentedCode, ["C:/software/jalangi-dynamic-slicer/project_v2/Milestone2/analysis.js"]);
-      analysisResult
-        .then((result) => {
-          console.log("PATATA");
-          console.log(result);
-        })
-        .catch((err) => console.log(err));
-    });
+    var results = jalangi.analyze(args);
+    console.log(results);
     console.log("running slice.js for arguments: " + inFile, outFile, lineNb);
+    // node slice.js --inFile example.js --outFile exampleFix.js --lineNb 2  
   }
 
   slice(args.inFile, args.outFile, args.lineNb);

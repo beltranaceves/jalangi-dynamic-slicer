@@ -1,4 +1,4 @@
-var tools = require("./tools.js"); // TODO: Come back and use this instead of inline script
+var tools = require("./tools.js");
 const util = require("util");
 const astHandler = require("./astHandler.js");
 
@@ -54,14 +54,14 @@ const astHandler = require("./astHandler.js");
     ) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
 
-      console.log(
-        "Declaration: ",
-        iidToLocation(getGlobalIID(iid)),
-        name,
-        val,
-        isArgument,
-        isCatchParam
-      );
+      // console.log(
+      //   "Declaration: ",
+      //   iidToLocation(getGlobalIID(iid)),
+      //   name,
+      //   val,
+      //   isArgument,
+      //   isCatchParam
+      // );
       // defUse.pushDef({
       //   name: name,
       //   operation: "def",
@@ -78,7 +78,7 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Read: ", line, name, val, isGlobal);
+      // console.log("Read: ", line, name, val, isGlobal);
     },
     write: function (iid, name, val, lhs, isGlobal, isScriptLocal) {
       variables += `${val}\n`;
@@ -89,7 +89,7 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
+      // console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
     },
     invokeFun: function (iid, f, base, args, val, isConstructor) {
       // console.log("Function call: ", f);
@@ -98,7 +98,6 @@ const astHandler = require("./astHandler.js");
       }
     },
     invokeFunPre: function (iid, f, base, args) {
-      // TODO: check if this messes up variable reads
       if (f == console.log) {
         return { f: f, base: base, args: args, skip: true };
       }
@@ -107,15 +106,9 @@ const astHandler = require("./astHandler.js");
      * This callback is called when an execution terminates in node.js.
      */
     endExecution: function () {
-      // console.log(variables);
-      // console.log(util.inspect(defUse.defUse, { depth: 4 }));
-      // console.log(sandbox.smap);
-      // console.log(sandbox);
-      // console.log();
       var inFile = J$.initParams.inFile;
       var outFile = J$.initParams.outFile;
       var lineNb = J$.initParams.lineNb;
-      console.log(J$);
       astHandler.sliceCode(defUse, inFile, outFile, lineNb, J$.iids.code);
 
     },
