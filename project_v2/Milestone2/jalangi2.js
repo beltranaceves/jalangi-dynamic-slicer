@@ -97,14 +97,6 @@ function analyze(args) {
     process.on("exit", function () {
       // TODO: go back to this and make sure its true, if not move the endExecution to astHandler ending
       J$.endExecution();
-      console.log(J$.result);
-      fs.writeFileSync(args.outFile, J$.result, err => {
-        if (err) {
-          console.error(err)
-          return
-        }
-        //file written successfully
-      })
     });
 
     J$.initParams = {

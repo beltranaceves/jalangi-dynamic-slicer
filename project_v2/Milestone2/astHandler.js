@@ -2,6 +2,7 @@ const acorn = require("acorn");
 const { walk } = require("@meriyah-utils/walker");
 const escodegen = require("escodegen");
 const util = require("util");
+const fs = require("fs");
 
 function sliceCode(defUse, inFile, outFile, lineNb, code) {
   var [listLines, listVariables] = getSliceLines(defUse, code, lineNb);
@@ -25,13 +26,21 @@ function sliceCode(defUse, inFile, outFile, lineNb, code) {
     leave(node, parent, prop, index) {},
   });
   var output = escodegen.generate(ast);
-//   console.log(output);
-  J$.result = output;
-  return output;
+  writeFile(output, outFile);
+}
+
+function writeFile(code, outFile) {
+  fs.writeFileSync(outFile, code, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    //file written successfully
+  });
 }
 
 function getSliceLines(defUse, code, line) {
-  var correctLines = [line]; // Lista de lineas que quiero conservar
+  var correctLines = [line]; // List of lines I want to keep
   var correctVariables = [];
   [correctLines, correctVariables] = exploreLines(
     defUse,
@@ -44,7 +53,7 @@ function getSliceLines(defUse, code, line) {
 
 function exploreLines(defUse, lines, correctLines, correctVariables) {
   var line = lines[0];
-  variables = defUse.findByLine(line); // Devuelve todas las variables implicadas en una linea
+  variables = defUse.findByLine(line); // Return every slicing criterion in a given line
   for (const variable of variables) {
     for (const use of variable.prev) {
       if (!correctLines.includes(use.line)) {

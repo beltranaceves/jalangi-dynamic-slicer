@@ -91,7 +91,7 @@ const astHandler = require("./astHandler.js");
       });
       // console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
     },
-    getField: function(iid, base, offset, val, isComputed, isOpAssign, isMethodCall) {
+    getField: function(iid, base, offset, val, isComputed, isOpAssign, isMethodCall) { // TODO: use a better aproach that includes de variable name of the base, this can fail if two objects have the samne atributte
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       defUse.pushNode({
         name: offset,
