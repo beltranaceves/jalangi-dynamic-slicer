@@ -112,12 +112,6 @@ const astHandler = require("./astHandler.js");
       });
       // console.log("Write: ", line,  base, offset, val, isComputed, isOpAssign);
     },
-    invokeFun: function (iid, f, base, args, val, isConstructor) { // TODO choose one of these and delete the other
-      // console.log("Function call: ", f);
-      if (f == console.log) {
-        return false;
-      }
-    },
     invokeFunPre: function (iid, f, base, args) {
       if (f == console.log) {
         return { f: f, base: base, args: args, skip: true };
