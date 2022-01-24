@@ -32,7 +32,7 @@ const jalangi = require("./jalangi2.js");
 
     jalangi.analyze(args);
     console.log("running slice.js for arguments: " + inFile, outFile, lineNb);
-    //node slice.js --inFile example.js --outFile exampleFix.js --lineNb 2  
+    //node slice.js --inFile example.js --outFile exampleFix.js --lineNb 9
     //node slice.js --inFile ../testcases/milestone2/a8_in.js --outFile ../testcases/milestone2/a8_predicted_out.js --lineNb 8
   }
 
