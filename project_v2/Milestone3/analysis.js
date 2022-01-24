@@ -74,7 +74,7 @@ const astHandler = require("./astHandler.js");
     read: function (iid, name, val, isGlobal, isScriptLocal) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var frame = sandbox.smemory.getShadowObjectOfObject(val);
-      console.log(frame);
+      // console.log(frame);
       defUse.pushNode({
         name: name,
         operation: "read",
@@ -82,13 +82,13 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Read: ", line, name, val, isGlobal);
+      // console.log("Read: ", line, name, val, isGlobal);
     },
     write: function (iid, name, val, lhs, isGlobal, isScriptLocal) {
       variables += `${val}\n`;
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var frame = sandbox.smemory.getShadowObjectOfObject(val);
-      console.log(frame);
+      // console.log(frame);
       defUse.pushNode({
         name: name,
         operation: "write",
@@ -96,7 +96,7 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
+      // console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
     },
     getFieldPre: function(iid, base, offset, val, isComputed, isOpAssign, isMethodCall) { // TODO: use a better aproach that includes de variable name of the base, this can fail if two objects have the samne atributte
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
@@ -108,7 +108,7 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Get: ", line, base, offset, val, isComputed, isOpAssign, isMethodCall);
+      // console.log("Get: ", line, base, offset, val, isComputed, isOpAssign, isMethodCall);
     },
     putFieldPre: function(iid, base, offset, val, isComputed, isOpAssign) {
       variables += `${val}\n`;
@@ -121,7 +121,7 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Put: ", line,  base, offset, val, isComputed, isOpAssign);
+      // console.log("Put: ", line,  base, offset, val, isComputed, isOpAssign);
     },
     invokeFunPre: function (iid, f, base, args) {
       if (f == console.log) {

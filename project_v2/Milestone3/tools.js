@@ -7,7 +7,7 @@ function DefUse() {
     this.defUse.push(definition);
   };
 
-  this.isObject = function(obj) {
+  this.isObject = function (obj) {
     return Object.prototype.toString.call(obj) === '[object Object]';
   };
 
@@ -108,42 +108,40 @@ function DefUse() {
         case "read":
           /*
           Find a write in the same line and read.next.push(write)
-            if read is an object add synonim to read and write
-          Find a put in the same line whose parent is not read and read.next.push(put)
+            if read is an object add synonim to read and write 
+          Find a put in the same line  and read.next.push(put)
             if read is an object add synonim to read and put
           */
-         var read = entry;
+          var read = entry;
           var writes = this.findByOperationAndByLine(read.line, "write");
           for (const write of writes) {
             read.next.push(write);
             if (read.isObject) {
-              this.synonims[read.name] = write.name;
-              this.synonims[write.name] = read.name;
+              this.synonims[read.name] = [write.name, write.shadow];
+              this.synonims[write.name] = [read.name, read.shadow];
             }
           }
 
           var puts = this.findByOperationAndByLine(read.line, "put");
           for (const put of puts) {
-            if (put.shadow != read.shadow) {
-              read.next.push(put);
-              if (read.isObject) {
-                this.synonims[read.name] = put.name;
-                this.synonims[put.name] = read.name;
-              }
+            read.next.push(put);
+            if (read.isObject) {
+              this.synonims[read.name] = [put.name, put.shadow.owner];
+              this.synonims[put.name] = [read.name, read.shadow];
             }
           }
           break;
         case "write":
           /*
           Iterate over all the entries 
-            if entry is after write and  is read or get
+            if entry is after write and  is read
               if entry is same or synonim of write.name
                 write.next.push(entry)
           */
-         var write = entry;
+          var write = entry;
           for (const entry of this.defUse) {
-            if (entry.line > write.line && (entry.operation == "read" || entry.operation == "get")) {
-              if (entry.name == write.name || (this.synonims[entry.name] && this.synonims[entry.name].includes(write.name))) {
+            if (entry.line > write.line && (entry.operation == "read")) {
+              if (entry.name == write.name || (this.synonims[entry.name] && this.synonims[entry.name].includes([write.name, write.shadow]))) {
                 write.next.push(entry);
               }
             }
@@ -151,13 +149,24 @@ function DefUse() {
           break;
         case "get":
           /*
-          Find a read in the same line with the same parend and get.next.push()
+          Find a read in the same line with the same parend and read.next.push(get)
+          Find a write in the same line and get.next.push(write)
+            if get is an object add synonim to read and get
           */
-         var get = entry;
+          var get = entry;
           var reads = this.findByOperationAndByLine(get.line, "read");
           for (const read of reads) {
             if (read.shadow == get.shadow) {
-              get.next.push(read);
+              read.next.push(get);
+            }
+          }
+
+          var writes = this.findByOperationAndByLine(get.line, "write");
+          for (const write of writes) {
+            get.next.push(write);
+            if (get.isObject) {
+              this.synonims[get.name] = [write.name, write.shadow];
+              this.synonims[write.name] = [get.name, get.shadow];
             }
           }
           break;
@@ -166,18 +175,10 @@ function DefUse() {
           Find a read in the same line who is the parent and put.next.push(read) then treat read as write
            */
           var put = entry;
-          var reads = this.findByOperationAndByLine(put.line, "read");
-          for (const read of reads) {
-            if (read.shadow == put.shadow.owner) {
-              put.next.push(read);
-              //Treat read as write
-              var write = read;
-              for (const entry of this.defUse) {
-                if (entry.line > write.line && (entry.operation == "read" || entry.operation == "get")) {
-                  if (entry.name == write.name || (this.synonims[entry.name] && this.synonims[entry.name].includes(write.name))) {
-                    write.next.push(entry);
-                  }
-                }
+          for (const entry of this.defUse) {
+            if (entry.line > put.line && (entry.operation == "get")) {
+              if (entry.name == put.name || (this.synonims[entry.name] && this.synonims[entry.name].includes([put.name, put.shadow]))) {
+                put.next.push(entry);
               }
             }
           }
@@ -190,3 +191,12 @@ function DefUse() {
 module.exports = {
   DefUse
 };
+
+
+
+/*
+  Write: iterate over all entries 
+    if entry is after write
+      if entry is read and is same or synonim of write.name then write.next.push(entry)
+      if entry is get and is same Shadow then write.next.push(entry)
+*/

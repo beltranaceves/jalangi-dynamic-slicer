@@ -1,9 +1,8 @@
 function sliceMe() {
-    var a = { course: 'Program Analysis' };
-    var b = 'Winter';
+    var a = 'Program Analysis';
     var c = {};
-    c = a;
-    c.semester = b;
-    return a;
+    c.course = a;
+    var d = c.course;
+    return d;
 }
 sliceMe();

@@ -1,11 +1,11 @@
 function sliceMe() {
-  var a = {course:'Program Analysis'};
+  var a = 'Program Analysis';
   var b = 'Winter';
   var c = {};
-  c = a;
+  c.course = a;
   c.semester = b;
   var d = c.course;
-  return a;
+  return d;
 }
 
 sliceMe();
