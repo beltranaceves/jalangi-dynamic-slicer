@@ -8,7 +8,11 @@ function DefUse() {
   };
 
   this.isObject = function (obj) {
-    return Object.prototype.toString.call(obj) === '[object Object]';
+    return (
+      typeof obj === 'object' &&
+      !Array.isArray(obj) &&
+      obj !== null
+    );
   };
 
 
@@ -16,7 +20,7 @@ function DefUse() {
     var prev = this.getPreviousOcurrences(node);
     node.prev = prev;
     node.next = [];
-    node.isObject = this.isObject(node);
+    node.isObject = this.isObject(node.value);
     this.defUse.push(node);
   };
 
@@ -74,28 +78,29 @@ function DefUse() {
     return foundEntries;
   };
 
-  this.flatten = function () {
-    var lines = [];
-    for (const entry of this.defUse) {
-      if (!lines.includes(entry.line)) {
-        lines.push(entry.line);
+  this.hasNextByOperations = function (node, operations) {
+    var foundEntries = [];
+    for (const entry of node.next) {
+      if (operations.includes(entry.operation)) {
+        foundEntries.push(entry);
       }
     }
-    return lines;
+    return foundEntries;
   };
 
-  this.checkObjectReferenceWrite = function (entry) {
-    if (entry.operation == "read") {
-      var nodes = this.findByLine(entry.line);
-      for (const node of nodes) {
-        if (node.operation == "write") {
-          this.synonims[node.name] = entry.name;
-          this.synonims[entry.name] = node.name;
+  this.pruneEdges = function () {
+    for (const entry of this.defUse) {
+      if (entry.operation == "get" || entry.operation == "put") {
+        for (const node of entry.next) {
+          if (node.operation == "read") {
+            if (this.hasNextByOperations(node, ["get", "put"])) {
+              entry.next.splice(entry.next.indexOf(node), 1);
+            }
+          }
         }
       }
     }
   };
-
   this.complete = function () {
     for (const entry of this.defUse) {
       // this.checkObjectReferenceWrite(entry);
@@ -111,6 +116,9 @@ function DefUse() {
             if read is an object add synonim to read and write 
           Find a put in the same line  and read.next.push(put)
             if read is an object add synonim to read and put
+          Iterate over results of FindByNext(read)
+            if read points to get or put 
+              if results has put, delete
           */
           var read = entry;
           var writes = this.findByOperationAndByLine(read.line, "write");
@@ -130,6 +138,19 @@ function DefUse() {
               this.synonims[put.name] = [read.name, read.shadow];
             }
           }
+
+          // Iterate over results of FindByNext(read)
+          //   if read points to get or put 
+          //     if results has put, delete
+
+          // if (this.hasNextByOperation(read, "put") || this.hasNextByOperation(read, "get")) {
+          //   var edges = this.findByNext(read);
+          //   for (const edge of edges) {
+          //     if (edge.operation == "put" || edge.operation == "get") {
+          //       edge.next.splice(edge.next.indexOf(read), 1);
+          //     }
+          //   }
+          // }
           break;
         case "write":
           /*
@@ -176,17 +197,25 @@ function DefUse() {
            */
           var put = entry;
           for (const entry of this.defUse) {
-            if (entry.line > put.line && (entry.operation == "get")) {
-              if (entry.name == put.name || (this.synonims[entry.name] && this.synonims[entry.name].includes([put.name, put.shadow]))) {
-                put.next.push(entry);
+            if (entry.line > put.line) {
+              if (entry.operation == "get") {
+                if (entry.name == put.name || (this.synonims[entry.name] && this.synonims[entry.name].includes([put.name, put.shadow]))) {
+                  put.next.push(entry);
+                }
+              }
+              if (entry.operation == "read") {
+                if (entry.shadow == put.shadow.owner || (this.synonims[entry.name] && this.synonims[entry.name].includes([put.name, put.shadow]))) {
+                  put.next.push(entry);
+                }
               }
             }
           }
           break;
       }
     }
+    this.pruneEdges();
   };
-}
+};
 
 module.exports = {
   DefUse

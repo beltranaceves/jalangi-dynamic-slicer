@@ -79,6 +79,7 @@ const astHandler = require("./astHandler.js");
         name: name,
         operation: "read",
         shadow: frame,
+        value: val,
         location: iidToLocation(iid),
         line: parseInt(line)
       });
@@ -93,6 +94,7 @@ const astHandler = require("./astHandler.js");
         name: name,
         operation: "write",
         shadow: frame,
+        value: val,
         location: iidToLocation(iid),
         line: parseInt(line)
       });
@@ -105,6 +107,7 @@ const astHandler = require("./astHandler.js");
         name: offset,
         operation: "get",
         shadow: so,
+        value: val,
         location: iidToLocation(iid),
         line: parseInt(line)
       });
@@ -118,6 +121,7 @@ const astHandler = require("./astHandler.js");
         name: offset,
         operation: "put",
         shadow: so,
+        value: val,
         location: iidToLocation(iid),
         line: parseInt(line)
       });
