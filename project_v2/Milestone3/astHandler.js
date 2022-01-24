@@ -1,3 +1,4 @@
+/* jshint esversion: 8*/
 const acorn = require("acorn");
 const { walk } = require("@meriyah-utils/walker");
 const escodegen = require("escodegen");
@@ -42,31 +43,34 @@ function writeFile(code, outFile) {
 function getSliceLines(defUse, code, line) {
   var correctLines = [line]; // List of lines I want to keep
   var correctVariables = [];
+  var variables = defUse.findByLine(line);
   [correctLines, correctVariables] = exploreLines(
     defUse,
-    [line],
+    variables,
     correctLines,
     correctVariables
   );
   return [correctLines, correctVariables];
 }
 
-function exploreLines(defUse, lines, correctLines, correctVariables) {
-  var line = lines[0];
-  variables = defUse.findByLine(line); // Return every slicing criterion in a given line
-  for (const variable of variables) {
-    for (const use of variable.prev) {
+function exploreLines(defUse, variables, correctLines, correctVariables) {
+  defUse.complete();
+  while (variables.length > 0) {
+    var variable = variables.pop();
+    var previous = defUse.findByNext(variable);
+    for (const use of previous) {
       if (!correctLines.includes(use.line)) {
         correctLines.push(use.line);
-        lines.push(use.line);
-        if (!correctVariables.includes(use.name)) {
-          correctVariables.push(use.name);
+        if (!variables.includes(use.name)) {
+          variables.push(use);
         }
       }
-    }
-    lines = lines.slice(1);
-    if (lines.length != 0) {
-      exploreLines(defUse, lines, correctLines, correctVariables);
+      if (!correctVariables.includes(use.name)) {
+        correctVariables.push(use.name);
+        if (!variables.includes(use.name)) {
+          variables.push(use);
+        }
+      }
     }
   }
   return [correctLines, correctVariables];

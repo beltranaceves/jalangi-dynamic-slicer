@@ -1,10 +1,11 @@
 function sliceMe() {
-  var x;
-  var y;
-  x = 1;
-  y = 2;
-  x = x + y;
-  y += 2;
-  return y; // slicing criterion
+  var a = {course:'Program Analysis'};
+  var b = 'Winter';
+  var c = {};
+  c = a;
+  c.semester = b;
+  var d = c.course;
+  return a;
 }
+
 sliceMe();
