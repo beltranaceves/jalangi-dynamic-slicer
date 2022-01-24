@@ -6,7 +6,6 @@
     "@meriyah-utils/walker": "^1.0.2",
     "acorn": "^7.2.0",
     "argparse": "^2.0.1",
-    "ast-flow-graph": "^1.0.18",
     "codemirror": "5.1.0",
     "cover": "0.2.9",
     "datatables": "1.10.6",
@@ -19,7 +18,6 @@
     "parse5": "2.1.5",
     "q": "1.2.0",
     "rewriting-proxy": "0.5.1",
-    "styx": "^0.2.1",
     "temp": "0.9.1"
   },
   "bundledDependencies": [

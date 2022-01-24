@@ -75,7 +75,6 @@ const astHandler = require("./astHandler.js");
       defUse.pushNode({
         name: name,
         operation: "read",
-        value: val,
         location: iidToLocation(iid),
         line: parseInt(line)
       });
@@ -87,7 +86,6 @@ const astHandler = require("./astHandler.js");
       defUse.pushNode({
         name: name,
         operation: "write",
-        value: val,
         location: iidToLocation(iid),
         line: parseInt(line)
       });
@@ -97,43 +95,28 @@ const astHandler = require("./astHandler.js");
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       defUse.pushNode({
         name: offset,
-        operation: "get",
-        value: val,
-        base: base,
+        operation: "read",
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Get: ", line, base, offset, val, isComputed, isOpAssign, isMethodCall);
+      // console.log("Read: ", line, base, offset, val, isComputed, isOpAssign, isMethodCall);
     },
     putField: function(iid, base, offset, val, isComputed, isOpAssign) {
       variables += `${val}\n`;
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       defUse.pushNode({
         name: offset,
-        operation: "put",
-        value: val,
-        base: base,
+        operation: "write",
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Put: ", line,  base, offset, val, isComputed, isOpAssign);
-    },
-    literal: function(iid, val, hasGetterSetter){
-      var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
-      // console.log(line, val, hasGetterSetter);
+      // console.log("Write: ", line,  base, offset, val, isComputed, isOpAssign);
     },
     invokeFunPre: function (iid, f, base, args) {
       if (f == console.log) {
         return { f: f, base: base, args: args, skip: true };
       }
     },
-    binary: function(iid, op, left, right, result, isOpAssign, isSwitchCaseComparison, isComputed) {
-      console.log("");
-      if (isOpAssign) {
-        console.log(left, right);
-      }
-    },  
-
     /**
      * This callback is called when an execution terminates in node.js.
      */
@@ -144,7 +127,7 @@ const astHandler = require("./astHandler.js");
       astHandler.sliceCode(defUse, inFile, outFile, lineNb, J$.iids.code);
 
     },
-    // node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js --astHandlerModule ast.js
+    //node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js --astHandlerModule ast.js
     // node ../src/js/commands/jalangi.js
   };
 })(J$);
