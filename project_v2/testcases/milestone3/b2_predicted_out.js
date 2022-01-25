@@ -1,4 +1,4 @@
-function sliceMe() {    
+function sliceMe() {
     var str = 'sample statement';
     var letter = 's';
     var length = str.length;
@@ -7,5 +7,4 @@ function sliceMe() {
         }
     }
 }
-
 sliceMe();

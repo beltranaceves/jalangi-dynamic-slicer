@@ -1,19 +1,14 @@
-function sliceMe(arr) {
-    var length = arr.length;
-    var status = 'invalid';
-    if (arr[length - 1] > 0) {
-        status = 'valid';
+function sliceMe() {
+    var x = 0;
+    var y = 1;
+    var z = 2;
+    switch (y) {
+    case 1:
+        x = 10;
+    default:
+        z = x;
+        break;
     }
+    return z;
 }
-sliceMe([
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10
-]);
+sliceMe();

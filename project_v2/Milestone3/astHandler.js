@@ -18,9 +18,6 @@ function sliceCode(defUse, inFile, outFile, lineNb, code) {
 function removeLines(ast, lines, variables) {
   walk(ast, {
     enter(node, parent, prop, index) {
-      if (node.type == "IfStatement") {
-        console.log(node.loc);
-      }
       if (!lines.includes(node.loc.start.line)) {
         if (node.type == "VariableDeclaration") {
           if (variables.includes(node.declarations[0].id.name)) {
@@ -76,8 +73,8 @@ function exploreBFS(defUse, nodes, correctLines, correctVariables) {
       if (!correctVariables.includes(previousNode.name)) {
         correctVariables.push(previousNode.name);
       }
-      if (!usedVariables.includes(previousNode.name)) {
-        usedVariables.push(previousNode.name);
+      if (!usedVariables.includes(previousNode)) {
+        usedVariables.push(previousNode);
         nodes.push(previousNode);
       }
     }

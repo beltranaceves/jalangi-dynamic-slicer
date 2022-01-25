@@ -1,51 +1,47 @@
-J$.iids = {"8":[4,7,4,24],"9":[2,16,2,19],"10":[4,11,4,19],"17":[2,16,2,26],"18":[4,7,4,24],"25":[2,16,2,26],"33":[2,16,2,26],"41":[3,16,3,25],"49":[3,16,3,25],"57":[3,16,3,25],"65":[4,7,4,10],"73":[4,11,4,17],"81":[4,18,4,19],"89":[4,7,4,20],"97":[4,23,4,24],"105":[5,16,5,23],"113":[5,16,5,23],"121":[5,7,5,24],"129":[7,3,7,10],"137":[7,15,7,21],"145":[7,3,7,22],"147":[7,3,7,14],"153":[7,3,7,23],"161":[8,3,8,9],"169":[8,3,8,10],"177":[1,1,9,2],"185":[1,1,9,2],"193":[1,1,9,2],"201":[1,1,9,2],"209":[1,1,9,2],"217":[11,1,11,8],"225":[11,10,11,11],"233":[11,13,11,14],"241":[11,16,11,17],"249":[11,19,11,20],"257":[11,22,11,23],"265":[11,25,11,26],"273":[11,28,11,29],"281":[11,31,11,32],"289":[11,34,11,35],"297":[11,37,11,39],"305":[11,9,11,40],"313":[11,1,11,41],"321":[11,1,11,42],"329":[1,1,11,42],"337":[1,1,9,2],"345":[1,1,11,42],"353":[4,3,6,4],"361":[1,1,9,2],"369":[1,1,9,2],"377":[1,1,11,42],"385":[1,1,11,42],"nBranches":2,"originalCodeFileName":"C:\\software\\jalangi-dynamic-slicer\\project_v2\\Milestone3\\example.js","instrumentedCodeFileName":"C:\\software\\jalangi-dynamic-slicer\\project_v2\\Milestone3\\example_jalangi_.js","code":"function sliceMe(arr) {    \r\n  var length = arr.length;\r\n  var status = \"invalid\";\r\n  if (arr[length-1] > 0){\r\n      status = \"valid\";\r\n  }\r\n  console.log(status);\r\n  status;\r\n}\r\n\r\nsliceMe([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);"};
+J$.iids = {"8":[5,13,5,14],"9":[2,13,2,14],"16":[6,14,6,15],"17":[2,13,2,14],"24":[9,14,9,15],"25":[2,13,2,14],"33":[3,13,3,14],"41":[3,13,3,14],"49":[3,13,3,14],"57":[4,13,4,14],"65":[4,13,4,14],"73":[4,13,4,14],"81":[5,13,5,14],"89":[7,17,7,18],"97":[7,17,7,18],"105":[7,13,7,19],"113":[6,14,6,15],"121":[10,17,10,19],"129":[10,17,10,19],"137":[10,13,10,20],"145":[9,14,9,15],"153":[12,17,12,18],"161":[12,17,12,18],"169":[12,13,12,19],"177":[15,12,15,13],"185":[15,12,15,13],"193":[15,5,15,14],"201":[1,1,16,2],"209":[1,1,16,2],"217":[1,1,16,2],"225":[1,1,16,2],"233":[1,1,16,2],"241":[18,1,18,8],"249":[18,1,18,10],"257":[18,1,18,11],"265":[1,1,18,11],"273":[1,1,16,2],"281":[1,1,18,11],"289":[5,13,5,14],"297":[6,14,6,15],"305":[9,14,9,15],"313":[1,1,16,2],"321":[1,1,16,2],"329":[1,1,18,11],"337":[1,1,18,11],"nBranches":6,"originalCodeFileName":"C:\\software\\jalangi-dynamic-slicer\\project_v2\\Milestone3\\example.js","instrumentedCodeFileName":"C:\\software\\jalangi-dynamic-slicer\\project_v2\\Milestone3\\example_jalangi_.js","code":"function sliceMe() {\r\n    var x = 0;\r\n    var y = 1;\r\n    var z = 2;\r\n    switch (y) {\r\n        case 0:\r\n            x = 5;\r\n            break;\r\n        case 1:\r\n            x = 10;\r\n        default:\r\n            z = x;\r\n            break;\r\n    }\r\n    return z;\r\n}\r\n\r\nsliceMe();"};
 jalangiLabel1:
     while (true) {
         try {
-            J$.Se(329, 'C:\\software\\jalangi-dynamic-slicer\\project_v2\\Milestone3\\example_jalangi_.js', 'C:\\software\\jalangi-dynamic-slicer\\project_v2\\Milestone3\\example.js');
-            function sliceMe(arr) {
+            J$.Se(265, 'C:\\software\\jalangi-dynamic-slicer\\project_v2\\Milestone3\\example_jalangi_.js', 'C:\\software\\jalangi-dynamic-slicer\\project_v2\\Milestone3\\example.js');
+            function sliceMe() {
                 jalangiLabel0:
                     while (true) {
                         try {
-                            J$.Fe(177, arguments.callee, this, arguments);
-                            arguments = J$.N(185, 'arguments', arguments, 4);
-                            arr = J$.N(193, 'arr', arr, 4);
-                            J$.N(201, 'length', length, 0);
-                            J$.N(209, 'status', status, 0);
-                            var length = J$.X1(33, J$.W(25, 'length', J$.G(17, J$.R(9, 'arr', arr, 0), 'length', 0), length, 1));
-                            var status = J$.X1(57, J$.W(49, 'status', J$.T(41, "invalid", 21, false), status, 1));
-                            if (J$.X1(353, J$.C(8, J$.B(18, '>', J$.G(89, J$.R(65, 'arr', arr, 0), J$.B(10, '-', J$.R(73, 'length', length, 0), J$.T(81, 1, 22, false), 0), 4), J$.T(97, 0, 22, false), 0)))) {
-                                J$.X1(121, status = J$.W(113, 'status', J$.T(105, "valid", 21, false), status, 0));
+                            J$.Fe(201, arguments.callee, this, arguments);
+                            arguments = J$.N(209, 'arguments', arguments, 4);
+                            J$.N(217, 'x', x, 0);
+                            J$.N(225, 'y', y, 0);
+                            J$.N(233, 'z', z, 0);
+                            var x = J$.X1(25, J$.W(17, 'x', J$.T(9, 0, 22, false), x, 1));
+                            var y = J$.X1(49, J$.W(41, 'y', J$.T(33, 1, 22, false), y, 1));
+                            var z = J$.X1(73, J$.W(65, 'z', J$.T(57, 2, 22, false), z, 1));
+                            switch (J$.X1(289, J$.C1(8, J$.R(81, 'y', y, 0)))) {
+                            case J$.X1(297, J$.C2(16, J$.T(113, 0, 22, false))):
+                                J$.X1(105, x = J$.W(97, 'x', J$.T(89, 5, 22, false), x, 0));
+                                break;
+                            case J$.X1(305, J$.C2(24, J$.T(145, 1, 22, false))):
+                                J$.X1(137, x = J$.W(129, 'x', J$.T(121, 10, 22, false), x, 0));
+                            default:
+                                J$.X1(169, z = J$.W(161, 'z', J$.R(153, 'x', x, 0), z, 0));
+                                break;
                             }
-                            J$.X1(153, J$.M(145, J$.R(129, 'console', console, 2), 'log', 0)(J$.R(137, 'status', status, 0)));
-                            J$.X1(169, J$.R(161, 'status', status, 0));
+                            return J$.X1(193, J$.Rt(185, J$.R(177, 'z', z, 0)));
                         } catch (J$e) {
-                            J$.Ex(361, J$e);
+                            J$.Ex(313, J$e);
                         } finally {
-                            if (J$.Fr(369))
+                            if (J$.Fr(321))
                                 continue jalangiLabel0;
                             else
                                 return J$.Ra();
                         }
                     }
             }
-            sliceMe = J$.N(345, 'sliceMe', J$.T(337, sliceMe, 12, false, 177), 0);
-            J$.X1(321, J$.F(313, J$.R(217, 'sliceMe', sliceMe, 1), 0)(J$.T(305, [
-                J$.T(225, 1, 22, false),
-                J$.T(233, 2, 22, false),
-                J$.T(241, 3, 22, false),
-                J$.T(249, 4, 22, false),
-                J$.T(257, 5, 22, false),
-                J$.T(265, 6, 22, false),
-                J$.T(273, 7, 22, false),
-                J$.T(281, 8, 22, false),
-                J$.T(289, 9, 22, false),
-                J$.T(297, 10, 22, false)
-            ], 10, false)));
+            sliceMe = J$.N(281, 'sliceMe', J$.T(273, sliceMe, 12, false, 201), 0);
+            J$.X1(257, J$.F(249, J$.R(241, 'sliceMe', sliceMe, 1), 0)());
         } catch (J$e) {
-            J$.Ex(377, J$e);
+            J$.Ex(329, J$e);
         } finally {
-            if (J$.Sr(385)) {
+            if (J$.Sr(337)) {
                 J$.L();
                 continue jalangiLabel1;
             } else {

@@ -183,34 +183,96 @@ function DefUse() {
     this.pruneEdges();
   };
 
+  this.addUntrackableNodes = function(ast, defUse, untrackableNodes) {
+    walk(ast, {
+      enter(node, parent, prop, index) {
+        if (untrackableNodes.includes(node.type)) {
+          defUse.pushNode(
+            {
+              name: node.type,
+              operation: node.type,
+              shadow: null,
+              value: null,
+              location: node.start,
+              line: node.loc.start.line
+            }
+          );
+        }
+      },
+    });
+  }
+
+  this.addSwitchCases = function (ast, defUse, untrackableNodes) {
+    walk(ast, {
+      enter(node, parent, prop, index) {
+        if (node.type == "SwitchCase") {
+          var caseNode = {
+            name: node.type,
+            operation: node.type,
+            shadow: null,
+            value: null,
+            location: node.start,
+            line: node.loc.start.line
+          };
+          defUse.pushNode(caseNode);
+          for (const entry of defUse.defUse) {
+            if (entry.line >= node.loc.start.line && entry.line <= node.loc.end.line) {
+              caseNode.next.push(entry);
+              if (untrackableNodes.includes(entry.name)) {
+                entry.next.push(caseNode);
+              } 
+            }
+          }
+        }
+      },
+    });
+  }
+
   this.computeControlDependencies = function () {
     var ast = acorn.parse(this.code, { locations: true });
     var defUse = this;
+    var untrackableNodes= ["BreakStatement", "ContinueStatement"];
+    this.addUntrackableNodes(ast, defUse, untrackableNodes);
+    this.addSwitchCases(ast, defUse, untrackableNodes);
     walk(ast, {
       enter(node, parent, prop, index) {
+        
+        var conditionalStatements = ["IfStatement", "WhileStatement", "SwitchStatement", "DoWhileStatement", "ForStatement"];
+
         switch (node.type) {
           case "IfStatement":
-            console.log("IfStatement", node.loc);
+            // console.log("IfStatement", node.loc);
             var conditions = defUse.findByLine(node.loc.start.line);
             for (const condition of conditions) {
               for (const entry of defUse.defUse) {
                 if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
                   condition.next.push(entry);
+                  if (untrackableNodes.includes(entry.name)) {
+                    entry.next.push(condition);
+                  } 
                 }
               }
             }
             break;
           case "WhileStatement":
-            console.log("WhieleStatement", node.loc);
+            // console.log("WhileStatement", node.loc);
             break;
           case "SwitchStatement":
-            console.log("SwitchStatement", node.loc);
+            // console.log("SwitchStatement", node.loc);
+            var discriminants = defUse.findByLine(node.loc.start.line);
+            for (const discriminant of discriminants) {
+              for (const entry of defUse.defUse) {
+                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line && entry.operation == 'SwitchCase') {
+                  discriminant.next.push(entry);
+                }
+              }
+            }
             break;
           case "DoWhileStatement":
-            console.log("DoWhileStatement", node.loc);
+            // console.log("DoWhileStatement", node.loc);
             break;
           case "ForStatement": //TODO maybe not needed
-            console.log("ForStatement", node.loc);
+            // console.log("ForStatement", node.loc);
             var conditions = defUse.findByLine(node.loc.start.line);
             for (const condition of conditions) {
               for (const entry of defUse.defUse) {
@@ -221,7 +283,7 @@ function DefUse() {
             }
             break;
           case "ExpressionStatement": //TODO maybe not needed
-            console.log("ExpressionStatement", node.loc);
+            // console.log("ExpressionStatement", node.loc);
             break;
           default:
             break;
@@ -229,6 +291,7 @@ function DefUse() {
       },
       leave(node, parent, prop, index) { },
     });
+
   };
 }
 
