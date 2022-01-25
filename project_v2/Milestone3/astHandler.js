@@ -12,6 +12,9 @@ function sliceCode(defUse, inFile, outFile, lineNb, code) {
   var ast = acorn.parse(code, { locations: true });
   walk(ast, {
     enter(node, parent, prop, index) {
+      if (node.type == "IfStatement") {
+        console.log(node.loc);
+      }
       if (!listLines.includes(node.loc.start.line)) {
         if (node.type == "VariableDeclaration") {
           if (listVariables.includes(node.declarations[0].id.name)) {
@@ -44,7 +47,7 @@ function getSliceLines(defUse, code, line) {
   var correctLines = [line]; // List of lines I want to keep
   var correctVariables = [];
   var variables = defUse.findByLine(line);
-  [correctLines, correctVariables] = exploreLines(
+  [correctLines, correctVariables] = exploreBFS(
     defUse,
     variables,
     correctLines,
@@ -53,12 +56,12 @@ function getSliceLines(defUse, code, line) {
   return [correctLines, correctVariables];
 }
 
-function exploreLines(defUse, variables, correctLines, correctVariables) {
-  defUse.complete();
+function exploreBFS(defUse, variables, correctLines, correctVariables) {
+  defUse.computeDataDependencies();
   var usedVariables = [];
   while (variables.length > 0) {
     var variable = variables.pop();
-    var previous = defUse.findByNext(variable);
+    var previous = defUse.findPreviousNodes(variable);
     for (const use of previous) {
       if (!correctLines.includes(use.line)) {
         correctLines.push(use.line);
