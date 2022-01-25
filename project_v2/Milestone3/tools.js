@@ -1,7 +1,11 @@
 /* jshint esversion: 8*/
+const acorn = require("acorn");
+const { walk } = require("@meriyah-utils/walker");
+
 function DefUse() {
   this.defUse = [];
   this.synonims = {};
+  this.code;
 
   this.isObject = function (obj) {
     return (
@@ -180,7 +184,51 @@ function DefUse() {
   };
 
   this.computeControlDependencies = function () {
-
+    var ast = acorn.parse(this.code, { locations: true });
+    var defUse = this;
+    walk(ast, {
+      enter(node, parent, prop, index) {
+        switch (node.type) {
+          case "IfStatement":
+            console.log("IfStatement", node.loc);
+            var conditions = defUse.findByLine(node.loc.start.line);
+            for (const condition of conditions) {
+              for (const entry of defUse.defUse) {
+                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
+                  condition.next.push(entry);
+                }
+              }
+            }
+            break;
+          case "WhileStatement":
+            console.log("WhieleStatement", node.loc);
+            break;
+          case "SwitchStatement":
+            console.log("SwitchStatement", node.loc);
+            break;
+          case "DoWhileStatement":
+            console.log("DoWhileStatement", node.loc);
+            break;
+          case "ForStatement": //TODO maybe not needed
+            console.log("ForStatement", node.loc);
+            var conditions = defUse.findByLine(node.loc.start.line);
+            for (const condition of conditions) {
+              for (const entry of defUse.defUse) {
+                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
+                  condition.next.push(entry);
+                }
+              }
+            }
+            break;
+          case "ExpressionStatement": //TODO maybe not needed
+            console.log("ExpressionStatement", node.loc);
+            break;
+          default:
+            break;
+        }
+      },
+      leave(node, parent, prop, index) { },
+    });
   };
 }
 

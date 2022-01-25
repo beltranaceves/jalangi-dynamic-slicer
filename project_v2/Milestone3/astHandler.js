@@ -68,6 +68,7 @@ function exploreBFS(defUse, nodes, correctLines, correctVariables) {
   while (nodes.length > 0) {
     var node = nodes.pop();
     var previousNodes = defUse.findPreviousNodes(node);
+    previousNodes.push(node);
     for (const previousNode of previousNodes) {
       if (!correctLines.includes(previousNode.line)) {
         correctLines.push(previousNode.line);
@@ -76,6 +77,7 @@ function exploreBFS(defUse, nodes, correctLines, correctVariables) {
         correctVariables.push(previousNode.name);
       }
       if (!usedVariables.includes(previousNode.name)) {
+        usedVariables.push(previousNode.name);
         nodes.push(previousNode);
       }
     }

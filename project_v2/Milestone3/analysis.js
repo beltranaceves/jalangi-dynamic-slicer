@@ -56,7 +56,7 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      // console.log("Read: ", line, name, val, isGlobal);
+      console.log("Read: ", line, name, val, isGlobal);
     },
     write: function (iid, name, val, lhs, isGlobal, isScriptLocal) {
       variables += `${val}\n`;
@@ -70,7 +70,7 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      // console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
+      console.log("Write: ", line, name, val, lhs, isGlobal, isScriptLocal);
     },
     getFieldPre: function(iid, base, offset, val, isComputed, isOpAssign, isMethodCall) { // TODO: use a better aproach that includes de variable name of the base, this can fail if two objects have the samne atributte
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
@@ -108,6 +108,8 @@ const astHandler = require("./astHandler.js");
       var inFile = J$.initParams.inFile;
       var outFile = J$.initParams.outFile;
       var lineNb = J$.initParams.lineNb;
+
+      defUse.code = J$.iids.code;
       astHandler.sliceCode(defUse, inFile, outFile, lineNb, J$.iids.code);
 
     },

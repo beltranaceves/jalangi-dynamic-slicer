@@ -1,6 +1,5 @@
 function sliceMe(arr) {
     var length = arr.length;
-    var status = 'invalid';
     if (arr[length - 1] > 0) {
         status = 'valid';
     }
