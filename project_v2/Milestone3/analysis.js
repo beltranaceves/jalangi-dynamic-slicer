@@ -45,36 +45,9 @@ const astHandler = require("./astHandler.js");
     //               branchInfo.falseCount++;
     //           }
     //       },
-    declare: function (
-      iid,
-      name,
-      val,
-      isArgument,
-      argumentIndex,
-      isCatchParam
-    ) {
-      var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
-
-      // console.log(
-      //   "Declaration: ",
-      //   iidToLocation(getGlobalIID(iid)),
-      //   name,
-      //   val,
-      //   isArgument,
-      //   isCatchParam
-      // );
-      // defUse.pushDef({
-      //   name: name,
-      //   operation: "def",
-      //   location: iidToLocation(iid),
-      //   line: line,
-      //   uses: [],
-      // });
-    },
     read: function (iid, name, val, isGlobal, isScriptLocal) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var frame = sandbox.smemory.getShadowObjectOfObject(val);
-      // console.log(frame);
       defUse.pushNode({
         name: name,
         operation: "read",
@@ -89,7 +62,6 @@ const astHandler = require("./astHandler.js");
       variables += `${val}\n`;
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var frame = sandbox.smemory.getShadowObjectOfObject(val);
-      // console.log(frame);
       defUse.pushNode({
         name: name,
         operation: "write",
@@ -102,11 +74,11 @@ const astHandler = require("./astHandler.js");
     },
     getFieldPre: function(iid, base, offset, val, isComputed, isOpAssign, isMethodCall) { // TODO: use a better aproach that includes de variable name of the base, this can fail if two objects have the samne atributte
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
-      var so = sandbox.smemory.getShadowObject(base, offset, true);
+      var sO = sandbox.smemory.getShadowObject(base, offset, true);
       defUse.pushNode({
         name: offset,
         operation: "get",
-        shadow: so,
+        shadow: sO,
         value: val,
         location: iidToLocation(iid),
         line: parseInt(line)
@@ -116,11 +88,11 @@ const astHandler = require("./astHandler.js");
     putFieldPre: function(iid, base, offset, val, isComputed, isOpAssign) {
       variables += `${val}\n`;
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
-      var so = sandbox.smemory.getShadowObject(base, offset, false);
+      var sO = sandbox.smemory.getShadowObject(base, offset, false);
       defUse.pushNode({
         name: offset,
         operation: "put",
-        shadow: so,
+        shadow: sO,
         value: val,
         location: iidToLocation(iid),
         line: parseInt(line)
@@ -132,9 +104,6 @@ const astHandler = require("./astHandler.js");
         return { f: f, base: base, args: args, skip: true };
       }
     },
-    /**
-     * This callback is called when an execution terminates in node.js.
-     */
     endExecution: function () {
       var inFile = J$.initParams.inFile;
       var outFile = J$.initParams.outFile;

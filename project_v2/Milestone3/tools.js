@@ -178,7 +178,11 @@ function DefUse() {
     }
     this.pruneEdges();
   };
-};
+
+  this.computeControlDependencies = function () {
+
+  };
+}
 
 module.exports = {
   DefUse

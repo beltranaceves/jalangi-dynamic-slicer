@@ -6,18 +6,24 @@ const util = require("util");
 const fs = require("fs");
 
 function sliceCode(defUse, inFile, outFile, lineNb, code) {
-  var [listLines, listVariables] = getSliceLines(defUse, code, lineNb);
+  var [lines, variables] = getSliceLines(defUse, code, lineNb);
   var length = code.split("\n").length; //TODO ask for the correct way to approach this
-  listLines.push(1, length);
+  lines.push(1, length);
+
   var ast = acorn.parse(code, { locations: true });
+  var output = removeLines(ast, lines, variables);
+  writeFile(output, outFile);
+}
+
+function removeLines(ast, lines, variables) {
   walk(ast, {
     enter(node, parent, prop, index) {
       if (node.type == "IfStatement") {
         console.log(node.loc);
       }
-      if (!listLines.includes(node.loc.start.line)) {
+      if (!lines.includes(node.loc.start.line)) {
         if (node.type == "VariableDeclaration") {
-          if (listVariables.includes(node.declarations[0].id.name)) {
+          if (variables.includes(node.declarations[0].id.name)) {
             this.skip();
           } else {
             this.remove();
@@ -27,10 +33,10 @@ function sliceCode(defUse, inFile, outFile, lineNb, code) {
         }
       }
     },
-    leave(node, parent, prop, index) {},
+    leave(node, parent, prop, index) { },
   });
   var output = escodegen.generate(ast);
-  writeFile(output, outFile);
+  return output;
 }
 
 function writeFile(code, outFile) {
@@ -39,38 +45,38 @@ function writeFile(code, outFile) {
       console.error(err);
       return;
     }
-    //file written successfully
   });
 }
 
 function getSliceLines(defUse, code, line) {
   var correctLines = [line]; // List of lines I want to keep
   var correctVariables = [];
-  var variables = defUse.findByLine(line);
+  var slicingCriterions = defUse.findByLine(line);
   [correctLines, correctVariables] = exploreBFS(
     defUse,
-    variables,
+    slicingCriterions,
     correctLines,
     correctVariables
   );
   return [correctLines, correctVariables];
 }
 
-function exploreBFS(defUse, variables, correctLines, correctVariables) {
+function exploreBFS(defUse, nodes, correctLines, correctVariables) {
   defUse.computeDataDependencies();
+  defUse.computeControlDependencies();
   var usedVariables = [];
-  while (variables.length > 0) {
-    var variable = variables.pop();
-    var previous = defUse.findPreviousNodes(variable);
-    for (const use of previous) {
-      if (!correctLines.includes(use.line)) {
-        correctLines.push(use.line);
+  while (nodes.length > 0) {
+    var node = nodes.pop();
+    var previousNodes = defUse.findPreviousNodes(node);
+    for (const previousNode of previousNodes) {
+      if (!correctLines.includes(previousNode.line)) {
+        correctLines.push(previousNode.line);
       }
-      if (!correctVariables.includes(use.name)) {
-        correctVariables.push(use.name);
+      if (!correctVariables.includes(previousNode.name)) {
+        correctVariables.push(previousNode.name);
       }
-      if (!usedVariables.includes(use.name)) {
-        variables.push(use);
+      if (!usedVariables.includes(previousNode.name)) {
+        nodes.push(previousNode);
       }
     }
   }
