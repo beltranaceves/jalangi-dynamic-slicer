@@ -200,7 +200,7 @@ function DefUse() {
         }
       },
     });
-  }
+  };
 
   this.addSwitchCases = function (ast, defUse, untrackableNodes) {
     walk(ast, {
@@ -226,7 +226,7 @@ function DefUse() {
         }
       },
     });
-  }
+  };
 
   this.computeControlDependencies = function () {
     var ast = acorn.parse(this.code, { locations: true });
@@ -236,9 +236,6 @@ function DefUse() {
     this.addSwitchCases(ast, defUse, untrackableNodes);
     walk(ast, {
       enter(node, parent, prop, index) {
-        
-        var conditionalStatements = ["IfStatement", "WhileStatement", "SwitchStatement", "DoWhileStatement", "ForStatement"];
-
         switch (node.type) {
           case "IfStatement":
             // console.log("IfStatement", node.loc);
@@ -256,6 +253,17 @@ function DefUse() {
             break;
           case "WhileStatement":
             // console.log("WhileStatement", node.loc);
+            var conditions = defUse.findByLine(node.loc.start.line);
+            for (const condition of conditions) {
+              for (const entry of defUse.defUse) {
+                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
+                  condition.next.push(entry);
+                  if (untrackableNodes.includes(entry.name)) {
+                    entry.next.push(condition);
+                  } 
+                }
+              }
+            }
             break;
           case "SwitchStatement":
             // console.log("SwitchStatement", node.loc);
@@ -270,20 +278,31 @@ function DefUse() {
             break;
           case "DoWhileStatement":
             // console.log("DoWhileStatement", node.loc);
+            var conditions = defUse.findByLine(node.loc.end.line);
+            for (const condition of conditions) {
+              for (const entry of defUse.defUse) {
+                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
+                  condition.next.push(entry);
+                  if (untrackableNodes.includes(entry.name)) {
+                    entry.next.push(condition);
+                  } 
+                }
+              }
+            }
             break;
-          case "ForStatement": //TODO maybe not needed
+          case "ForStatement": 
             // console.log("ForStatement", node.loc);
             var conditions = defUse.findByLine(node.loc.start.line);
             for (const condition of conditions) {
               for (const entry of defUse.defUse) {
                 if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
                   condition.next.push(entry);
+                  if (untrackableNodes.includes(entry.name)) {
+                    entry.next.push(condition);
+                  } 
                 }
               }
             }
-            break;
-          case "ExpressionStatement": //TODO maybe not needed
-            // console.log("ExpressionStatement", node.loc);
             break;
           default:
             break;

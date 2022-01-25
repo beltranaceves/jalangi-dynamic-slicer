@@ -1,4 +1,4 @@
-var tools = require("./tools.js");
+var tools = require("./defUse.js");
 const util = require("util");
 const astHandler = require("./astHandler.js");
 

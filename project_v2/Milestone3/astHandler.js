@@ -18,16 +18,27 @@ function sliceCode(defUse, inFile, outFile, lineNb, code) {
 function removeLines(ast, lines, variables) {
   walk(ast, {
     enter(node, parent, prop, index) {
-      if (!lines.includes(node.loc.start.line)) {
-        if (node.type == "VariableDeclaration") {
-          if (variables.includes(node.declarations[0].id.name)) {
+      switch (node.type) {
+        case "DoWhileStatement":
+          if (lines.includes(node.loc.end.line)) {
             this.skip();
           } else {
             this.remove();
           }
-        } else {
-          this.remove();
-        }
+          break;
+        default:
+          if (!lines.includes(node.loc.start.line)) {
+            if (node.type == "VariableDeclaration") {
+              if (variables.includes(node.declarations[0].id.name)) {
+                this.skip();
+              } else {
+                this.remove();
+              }
+            } else {
+              this.remove();
+            }
+          }
+          break;
       }
     },
     leave(node, parent, prop, index) { },
