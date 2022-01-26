@@ -20,19 +20,19 @@ function removeLines(ast, lines, variables) {
     enter(node, parent, prop, index) {
       switch (node.type) {
         case "DoWhileStatement":
-          if (lines.includes(node.loc.end.line)) {
-            // this.skip();
-          } else {
+          if (!lines.includes(node.loc.end.line)) {
             this.remove();
-          }
+          } 
           break;
         default:
           if (!lines.includes(node.loc.start.line)) {
             if (node.type == "VariableDeclaration") {
-              if (variables.includes(node.declarations[0].id.name)) {
-                this.skip();
-              } else {
-                this.remove();
+              for (const variable of node.declarations) {
+                if (variables.includes(variable.id.name)) {
+                  this.skip();
+                } else {
+                  node.declarations.splice(node.declarations.indexOf(variable), 1);
+                }
               }
             } else {
               if (node.type != "BlockStatement") {

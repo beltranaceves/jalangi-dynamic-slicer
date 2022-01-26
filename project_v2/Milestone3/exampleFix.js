@@ -1,5 +1,5 @@
 function sliceMe() {
-    var x, y;
+    var x;
     do {
         x = x + 1;
     } while (x < 2);
