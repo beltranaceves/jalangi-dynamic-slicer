@@ -21,7 +21,7 @@ function removeLines(ast, lines, variables) {
       switch (node.type) {
         case "DoWhileStatement":
           if (lines.includes(node.loc.end.line)) {
-            this.skip();
+            // this.skip();
           } else {
             this.remove();
           }
@@ -35,7 +35,9 @@ function removeLines(ast, lines, variables) {
                 this.remove();
               }
             } else {
-              this.remove();
+              if (node.type != "BlockStatement") {
+                this.remove();
+              }
             }
           }
           break;
