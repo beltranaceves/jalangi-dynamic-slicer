@@ -1,50 +1,13 @@
 /* jshint esversion: 8*/
 var tools = require("./defUse.js");
-const util = require("util");
 const astHandler = require("./astHandler.js");
 
 (function (sandbox) {
   var defUse = new tools.DefUse();
-  var variables = "";
   var iidToLocation = sandbox.iidToLocation;
   var getGlobalIID = sandbox.getGlobalIID;
-  function getKeyByValue(object, value) {
-    value = value.map((entry) => {
-      return parseInt(entry);
-    });
-    for (const entry in object) {
-      // console.log(object[entry], value, object[entry] == value);
-      if (object[entry] == value) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   J$.analysis = {
-    //   /**
-    //    * This callback is called after a condition check before branching.
-    //    * Branching can happen in various statements
-    //    * including if-then-else, switch-case, while, for, ||, &&, ?:.
-    //    *
-    //    * @param {number} iid - Static unique instruction identifier of this callback
-    //    * @param {*} result - The value of the conditional expression
-    //    * @returns {{result: *}|undefined} - If an object is returned, the result of
-    //    * the conditional expression is replaced with the value stored in the
-    //    * <tt>result</tt> property of the object.
-    //    */
-    //   conditional : function (iid, result) {
-    //           var id = J$.getGlobalIID(iid);
-    //           var branchInfo = branches[id];
-    //           if (!branchInfo) {
-    //               branchInfo = branches[id] = {trueCount: 0, falseCount: 0};
-    //           }
-    //           if (result) {
-    //               branchInfo.trueCount++;
-    //           } else {
-    //               branchInfo.falseCount++;
-    //           }
-    //       },
     read: function (iid, name, val, isGlobal, isScriptLocal) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var frame = sandbox.smemory.getShadowObjectOfObject(val);
@@ -59,7 +22,6 @@ const astHandler = require("./astHandler.js");
       // console.log("Read: ", line, name, val, isGlobal);
     },
     write: function (iid, name, val, lhs, isGlobal, isScriptLocal) {
-      variables += `${val}\n`;
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var frame = sandbox.smemory.getShadowObjectOfObject(val);
       defUse.pushNode({
@@ -86,7 +48,6 @@ const astHandler = require("./astHandler.js");
       // console.log("Get: ", line, base, offset, val, isComputed, isOpAssign, isMethodCall);
     },
     putFieldPre: function(iid, base, offset, val, isComputed, isOpAssign) {
-      variables += `${val}\n`;
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var sO = sandbox.smemory.getShadowObject(base, offset, false);
       defUse.pushNode({
