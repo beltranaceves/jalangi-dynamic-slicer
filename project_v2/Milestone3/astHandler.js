@@ -107,7 +107,7 @@ function removeLines(ast, lines, variables, functions) {
     },
     leave(node, parent, prop, index) { },
   });
-  var output = escodegen.generate(ast);
+  var output = escodegen.generate(ast, {format: {quotes: 'double'}});
   return output;
 }
 

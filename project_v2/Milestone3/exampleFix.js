@@ -1,11 +1,9 @@
-function sliceMe() {
-    var x = doubleMe(1);
-    do {
-        x = x + 1;
-    } while (x < 2);
-    return x;
-}
-function doubleMe(x) {
-    return x * 2;
+function sliceMe(a, b) {
+    var x = 1;
+    var y = 0;
+    while (y < x) {
+        y += 1;
+    }
+    return y;
 }
 sliceMe();
