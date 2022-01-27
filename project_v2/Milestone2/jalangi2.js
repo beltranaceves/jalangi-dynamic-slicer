@@ -95,7 +95,6 @@ function analyze(args) {
     // this assumes that the endExecution() callback of the analysis
     // does not make any asynchronous calls
     process.on("exit", function () {
-      // TODO: go back to this and make sure its true, if not move the endExecution to astHandler ending
       J$.endExecution();
     });
 

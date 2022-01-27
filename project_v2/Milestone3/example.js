@@ -1,10 +1,10 @@
 function sliceMe() {
-    var x, y;
-    do {
-        x = x + 1;
-        y = y + 1;
-    } while (x < 2);
+    var x = doubleMe(2);
+    x = 1;
     return x;
 }
 
+function doubleMe(x) {  
+    return x * 2;
+}
 sliceMe();

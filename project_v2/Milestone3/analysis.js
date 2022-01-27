@@ -74,6 +74,10 @@ const astHandler = require("./astHandler.js");
       astHandler.sliceCode(defUse, inFile, outFile, lineNb, J$.iids.code);
 
     },
+    functionEnter: function(iid, f, dis, args) {
+      // console.log("FunctionEnter: ", f.name);
+      defUse.functions.push(f.name);
+    }
     //node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js --astHandlerModule ast.js
     // node ../src/js/commands/jalangi.js
   };

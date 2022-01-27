@@ -6,6 +6,7 @@ function DefUse() {
   this.defUse = [];
   this.synonims = {};
   this.code;
+  this.functions = [];
 
   this.isObject = function (obj) {
     return (

@@ -1,8 +1,6 @@
 function sliceMe() {
-    var x;
-    do {
-        x = x + 1;
-    } while (x < 2);
+    var x = doubleMe(2);
+    x = 1;
     return x;
 }
 sliceMe();

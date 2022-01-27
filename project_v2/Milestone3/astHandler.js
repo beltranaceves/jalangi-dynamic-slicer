@@ -7,15 +7,64 @@ const fs = require("fs");
 
 function sliceCode(defUse, inFile, outFile, lineNb, code) {
   var [lines, variables] = getSliceLines(defUse, code, lineNb);
-  var length = code.split("\n").length; //TODO ask for the correct way to approach this
-  lines.push(1, length);
-
+  var functions = defUse.functions;
+  
   var ast = acorn.parse(code, { locations: true });
-  var output = removeLines(ast, lines, variables);
+  // Find main function and pop it from functions
+  var mainFunction = findMainFunction(ast, lineNb);
+  lines.push(mainFunction.loc.start.line);
+  lines.push(mainFunction.loc.end.line);
+  var mainFunctionCall = findMainFunctionCall(ast, mainFunction.id.name);
+  lines.push(mainFunctionCall.loc.start.line);
+  lines.push(mainFunctionCall.loc.end.line);
+  console.log(lines);
+  var output = removeLines(ast, lines, variables, functions);
   writeFile(output, outFile);
 }
 
-function removeLines(ast, lines, variables) {
+function findMainFunctionCall(ast, name) {
+  var call = null;
+  walk(ast, {
+    enter(node, parent, prop, index) {  
+      if (node.type == "CallExpression") {
+        if (node.callee.name == name) {
+          call = node;
+        }
+      }
+    },
+  });
+  return call;
+}
+
+function findMainFunction(ast, line, type) {
+  var mainFunction = null;
+  walk(ast, {
+    enter(node, parent, prop, index) {
+      if (node.loc.start.line == line) {
+        var nodeParent = findParentOfNode(ast, node);
+        while (nodeParent != null && nodeParent.type != "FunctionDeclaration") {
+          nodeParent = findParentOfNode(ast, nodeParent);
+        }
+        mainFunction = nodeParent;
+      }
+    },
+  });
+  return mainFunction;
+}
+
+function findParentOfNode(ast, childNode) {
+  var returnNode = null;
+  walk(ast, {
+    enter(node, parent, prop, index) {
+      if (node == childNode) {
+        returnNode = parent;
+      }
+    },
+  });
+  return returnNode;
+}
+
+function removeLines(ast, lines, variables, functions) {
   walk(ast, {
     enter(node, parent, prop, index) {
       switch (node.type) {
