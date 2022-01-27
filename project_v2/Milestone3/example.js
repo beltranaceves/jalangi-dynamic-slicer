@@ -1,6 +1,6 @@
 function sliceMe() {
-    var x = 0;
-    var y = 0;
+    var x = doubleMe(1);
+    var y = doubleMe(x);
     do {
         x = x + 1;
         y = y + 1;
@@ -8,4 +8,7 @@ function sliceMe() {
     return x;
 }
 
+function doubleMe(x) {
+    return x * 2;
+}
 sliceMe();

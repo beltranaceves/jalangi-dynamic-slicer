@@ -4,11 +4,13 @@ const { walk } = require("@meriyah-utils/walker");
 const escodegen = require("escodegen");
 const util = require("util");
 const fs = require("fs");
+/*
+Questions:
 
+*/
 function sliceCode(defUse, inFile, outFile, lineNb, code) {
   var [lines, variables] = getSliceLines(defUse, code, lineNb);
   var functions = defUse.functions;
-
   var ast = acorn.parse(code, { locations: true });
   // Find main function and pop it from functions
   var mainFunction = findMainFunction(ast, lineNb);
@@ -17,6 +19,9 @@ function sliceCode(defUse, inFile, outFile, lineNb, code) {
   var mainFunctionCall = findMainFunctionCall(ast, mainFunction.id.name);
   lines.push(mainFunctionCall.loc.start.line);
   lines.push(mainFunctionCall.loc.end.line);
+
+  functions.splice(functions.indexOf(mainFunction.id.name), 1);
+
   var output = removeLines(ast, lines, variables, functions);
   writeFile(output, outFile);
 }
@@ -70,6 +75,11 @@ function removeLines(ast, lines, variables, functions) {
         case "DoWhileStatement":
           if (!lines.includes(node.loc.end.line)) {
             this.remove();
+          }
+          break;
+        case "FunctionDeclaration":
+          if (functions.includes(node.id.name)) {
+            this.skip();
           }
           break;
         default:
