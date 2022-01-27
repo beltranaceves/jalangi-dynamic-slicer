@@ -8,7 +8,7 @@ const fs = require("fs");
 function sliceCode(defUse, inFile, outFile, lineNb, code) {
   var [lines, variables] = getSliceLines(defUse, code, lineNb);
   var functions = defUse.functions;
-  
+
   var ast = acorn.parse(code, { locations: true });
   // Find main function and pop it from functions
   var mainFunction = findMainFunction(ast, lineNb);
@@ -17,7 +17,6 @@ function sliceCode(defUse, inFile, outFile, lineNb, code) {
   var mainFunctionCall = findMainFunctionCall(ast, mainFunction.id.name);
   lines.push(mainFunctionCall.loc.start.line);
   lines.push(mainFunctionCall.loc.end.line);
-  console.log(lines);
   var output = removeLines(ast, lines, variables, functions);
   writeFile(output, outFile);
 }
@@ -25,7 +24,7 @@ function sliceCode(defUse, inFile, outFile, lineNb, code) {
 function findMainFunctionCall(ast, name) {
   var call = null;
   walk(ast, {
-    enter(node, parent, prop, index) {  
+    enter(node, parent, prop, index) {
       if (node.type == "CallExpression") {
         if (node.callee.name == name) {
           call = node;
@@ -71,20 +70,24 @@ function removeLines(ast, lines, variables, functions) {
         case "DoWhileStatement":
           if (!lines.includes(node.loc.end.line)) {
             this.remove();
-          } 
+          }
           break;
         default:
           if (!lines.includes(node.loc.start.line)) {
             if (node.type == "VariableDeclaration") {
-              for (const variable of node.declarations) {
-                if (variables.includes(variable.id.name)) {
-                  this.skip();
-                } else {
-                  node.declarations.splice(node.declarations.indexOf(variable), 1);
-                }
+              if (variables.includes(node.declarations[0].id.name)) {
+                this.skip();
+              } else {
+                this.remove();
               }
             } else {
-              if (node.type != "BlockStatement") {
+              if (node.type == "BlockStatement") {
+                if (parent.type == "DoWhileStatement") {
+
+                } else {
+                  this.remove();
+                }
+              } else {
                 this.remove();
               }
             }
