@@ -92,9 +92,7 @@ function removeLines(ast, lines, variables, functions) {
               }
             } else {
               if (node.type == "BlockStatement") {
-                if (parent.type == "DoWhileStatement") {
-
-                } else {
+                if (containsLines(node, lines)) {
                   this.remove();
                 }
               } else {
@@ -107,7 +105,7 @@ function removeLines(ast, lines, variables, functions) {
     },
     leave(node, parent, prop, index) { },
   });
-  var output = escodegen.generate(ast, {format: {quotes: 'double'}});
+  var output = escodegen.generate(ast, { format: { quotes: 'double' } });
   return output;
 }
 
@@ -118,6 +116,18 @@ function writeFile(code, outFile) {
       return;
     }
   });
+}
+
+function containsLines(node, lines) {
+  var startLine = node.loc.start.line;
+  var endLine = node.loc.end.line;
+  var validLines = [];
+  for (var i = startLine; i <= endLine; i++) {
+    if (lines.includes(i)) {
+      validLines.push(i);
+    }
+  }
+  return (validLines.length == 0);
 }
 
 function getSliceLines(defUse, code, line) {

@@ -1,5 +1,5 @@
 function sliceMe() {
-    var a = 'Program Analysis';
+    var a = "Program Analysis";
     var c = {};
     c.course = a;
     var d = c.course;

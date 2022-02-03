@@ -1,6 +1,6 @@
 function sliceMe() {
-    var a = 'Program Analysis';
-    var b = 'Winter';
+    var a = "Program Analysis";
+    var b = "Winter";
     var c = {
         course: a,
         semester: b
