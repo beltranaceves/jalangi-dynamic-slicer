@@ -1,9 +1,9 @@
 /* jshint esversion: 8*/
-var tools = require("./defUse.js");
+var tools = require("./PDG.js");
 const astHandler = require("./astHandler.js");
 
 (function (sandbox) {
-  var defUse = new tools.DefUse();
+  var PDG = new tools.PDG();
   var iidToLocation = sandbox.iidToLocation;
   var getGlobalIID = sandbox.getGlobalIID;
 
@@ -11,7 +11,7 @@ const astHandler = require("./astHandler.js");
     read: function (iid, name, val, isGlobal, isScriptLocal) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var frame = sandbox.smemory.getShadowObjectOfObject(val);
-      defUse.pushNode({
+      PDG.pushNode({
         name: name,
         operation: "read",
         shadow: frame,
@@ -24,7 +24,7 @@ const astHandler = require("./astHandler.js");
     write: function (iid, name, val, lhs, isGlobal, isScriptLocal) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var frame = sandbox.smemory.getShadowObjectOfObject(val);
-      defUse.pushNode({
+      PDG.pushNode({
         name: name,
         operation: "write",
         shadow: frame,
@@ -37,7 +37,7 @@ const astHandler = require("./astHandler.js");
     getFieldPre: function(iid, base, offset, val, isComputed, isOpAssign, isMethodCall) { // TODO: use a better aproach that includes de variable name of the base, this can fail if two objects have the samne atributte
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var sO = sandbox.smemory.getShadowObject(base, offset, true);
-      defUse.pushNode({
+      PDG.pushNode({
         name: offset,
         operation: "get",
         shadow: sO,
@@ -50,7 +50,7 @@ const astHandler = require("./astHandler.js");
     putFieldPre: function(iid, base, offset, val, isComputed, isOpAssign) {
       var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
       var sO = sandbox.smemory.getShadowObject(base, offset, false);
-      defUse.pushNode({
+      PDG.pushNode({
         name: offset,
         operation: "put",
         shadow: sO,
@@ -60,6 +60,10 @@ const astHandler = require("./astHandler.js");
       });
       // console.log("Put: ", line,  base, offset, val, isComputed, isOpAssign);
     },
+    binaryPre: function(iid, op, left, right, isOpAssign, isSwitchCaseComparison, isComputed) {
+      var line = iidToLocation(getGlobalIID(iid));
+      console.log("Binary", line, op, left, right, isOpAssign, isSwitchCaseComparison, isComputed);
+    },
     invokeFunPre: function (iid, f, base, args) {
       if (f == console.log) {
         return { f: f, base: base, args: args, skip: true };
@@ -67,15 +71,15 @@ const astHandler = require("./astHandler.js");
     },
     functionEnter: function(iid, f, dis, args) {
       // console.log("FunctionEnter: ", f.name);
-      defUse.functions.push(f.name);
+      PDG.functions.push(f.name);
     },
     endExecution: function () {
       var inFile = J$.initParams.inFile;
       var outFile = J$.initParams.outFile;
       var lineNb = J$.initParams.lineNb;
 
-      defUse.code = J$.iids.code;
-      astHandler.sliceCode(defUse, inFile, outFile, lineNb, J$.iids.code);
+      PDG.code = J$.iids.code;
+      astHandler.sliceCode(PDG, inFile, outFile, lineNb, J$.iids.code);
 
     },
     //node ../../src/js/commands/jalangi.js --inlineIID --inlineSource --analysis analysis.js example.js --astHandlerModule ast.js

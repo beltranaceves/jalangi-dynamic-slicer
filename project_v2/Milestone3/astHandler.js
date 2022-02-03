@@ -8,9 +8,9 @@ const fs = require("fs");
 Questions:
 
 */
-function sliceCode(defUse, inFile, outFile, lineNb, code) {
-  var [lines, variables] = getSliceLines(defUse, code, lineNb);
-  var functions = defUse.functions;
+function sliceCode(PDG, inFile, outFile, lineNb, code) {
+  var [lines, variables] = getSliceLines(PDG, code, lineNb);
+  var functions = PDG.functions;
   var ast = acorn.parse(code, { locations: true });
   // Find main function and pop it from functions
   var mainFunction = findMainFunction(ast, lineNb);
@@ -130,12 +130,12 @@ function containsLines(node, lines) {
   return (validLines.length == 0);
 }
 
-function getSliceLines(defUse, code, line) {
+function getSliceLines(PDG, code, line) {
   var correctLines = [line]; // List of lines I want to keep
   var correctVariables = [];
-  var slicingCriterions = defUse.findByLine(line);
+  var slicingCriterions = PDG.findByLine(line);
   [correctLines, correctVariables] = exploreBFS(
-    defUse,
+    PDG,
     slicingCriterions,
     correctLines,
     correctVariables
@@ -143,13 +143,13 @@ function getSliceLines(defUse, code, line) {
   return [correctLines, correctVariables];
 }
 
-function exploreBFS(defUse, nodes, correctLines, correctVariables) {
-  defUse.computeDataDependencies();
-  defUse.computeControlDependencies();
+function exploreBFS(PDG, nodes, correctLines, correctVariables) {
+  PDG.computeDataDependencies();
+  PDG.computeControlDependencies();
   var usedVariables = [];
   while (nodes.length > 0) {
     var node = nodes.pop();
-    var previousNodes = defUse.findPreviousNodes(node);
+    var previousNodes = PDG.findPreviousNodes(node);
     previousNodes.push(node);
     for (const previousNode of previousNodes) {
       if (!correctLines.includes(previousNode.line)) {

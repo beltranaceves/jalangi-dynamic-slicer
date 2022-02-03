@@ -2,7 +2,7 @@
 const acorn = require("acorn");
 const { walk } = require("@meriyah-utils/walker");
 
-function DefUse() {
+function PDG() {
   this.defUse = [];
   this.synonims = {};
   this.code;
@@ -316,5 +316,5 @@ function DefUse() {
 }
 
 module.exports = {
-  DefUse
+  PDG
 };
