@@ -60,9 +60,14 @@ const astHandler = require("./astHandler.js");
       });
       // console.log("Put: ", line,  base, offset, val, isComputed, isOpAssign);
     },
-    binaryPre: function(iid, op, left, right, isOpAssign, isSwitchCaseComparison, isComputed) {
-      var line = iidToLocation(getGlobalIID(iid));
-      console.log("Binary", line, op, left, right, isOpAssign, isSwitchCaseComparison, isComputed);
+    conditional: function(iid, result) {
+      var line = iidToLocation(getGlobalIID(iid)).split(":")[2];
+      PDG.pushNode({
+        operation: "conditional",
+        location: iidToLocation(iid),
+        line: parseInt(line)
+      });
+      console.log("Conditional: ", line, result);
     },
     invokeFunPre: function (iid, f, base, args) {
       if (f == console.log) {

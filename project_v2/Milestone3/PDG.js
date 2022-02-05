@@ -83,6 +83,17 @@ function PDG() {
     for (const entry of this.defUse) {
 
       switch (entry.operation) {
+        case 'conditional':
+          /*
+          Find all nodes in the same line as conditional
+            for each node, node.next.push(conditional)
+          */
+          var conditional = entry;
+          var nodes = this.findByLine(conditional.line);
+          for (const node of nodes) {
+            node.next.push(conditional);
+          }
+          break;
         case 'read':
           /*
           Find a write in the same line and read.next.push(write)
@@ -184,11 +195,11 @@ function PDG() {
     this.pruneEdges();
   };
 
-  this.addUntrackableNodes = function(ast, defUse, untrackableNodes) {
+  this.addUntrackableNodes = function (ast, PDG, untrackableNodes) {
     walk(ast, {
       enter(node, parent, prop, index) {
         if (untrackableNodes.includes(node.type)) {
-          defUse.pushNode(
+          PDG.pushNode(
             {
               name: node.type,
               operation: node.type,
@@ -203,7 +214,7 @@ function PDG() {
     });
   };
 
-  this.addSwitchCases = function (ast, defUse, untrackableNodes) {
+  this.addSwitchCases = function (ast, PDG, untrackableNodes) {
     walk(ast, {
       enter(node, parent, prop, index) {
         if (node.type == "SwitchCase") {
@@ -215,13 +226,13 @@ function PDG() {
             location: node.start,
             line: node.loc.start.line
           };
-          defUse.pushNode(caseNode);
-          for (const entry of defUse.defUse) {
+          PDG.pushNode(caseNode);
+          for (const entry of PDG.defUse) {
             if (entry.line >= node.loc.start.line && entry.line <= node.loc.end.line) {
               caseNode.next.push(entry);
               if (untrackableNodes.includes(entry.name)) {
                 entry.next.push(caseNode);
-              } 
+              }
             }
           }
         }
@@ -230,83 +241,87 @@ function PDG() {
   };
 
   this.computeControlDependencies = function () {
+    // var conditionalTypes = ['IfStatement', 'WhileStatement', 'DoWhileStatement', 'ForStatement', 'SwitchStatement'];
     var ast = acorn.parse(this.code, { locations: true });
-    var defUse = this;
-    var untrackableNodes= ["BreakStatement", "ContinueStatement"];
-    this.addUntrackableNodes(ast, defUse, untrackableNodes);
-    this.addSwitchCases(ast, defUse, untrackableNodes);
+    var PDG = this;
+    var untrackableNodes = ["BreakStatement", "ContinueStatement"];
+    this.addUntrackableNodes(ast, PDG, untrackableNodes);
+    this.addSwitchCases(ast, PDG, untrackableNodes);
     walk(ast, {
       enter(node, parent, prop, index) {
-        switch (node.type) {
-          case "IfStatement":
-            // console.log("IfStatement", node.loc);
-            var conditions = defUse.findByLine(node.loc.start.line);
-            for (const condition of conditions) {
-              for (const entry of defUse.defUse) {
-                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
-                  condition.next.push(entry);
-                  if (untrackableNodes.includes(entry.name)) {
-                    entry.next.push(condition);
-                  } 
+        var conditional = PDG.findByOperationAndByLine(node.loc.start.line, 'conditional');
+        if (conditional != []) {
+          switch (node.type) {
+            case "IfStatement":
+              // console.log("IfStatement", node.loc);
+              var conditions = PDG.findByLine(node.loc.start.line);
+              for (const condition of conditions) {
+                for (const entry of PDG.defUse) {
+                  if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
+                    condition.next.push(entry);
+                    if (untrackableNodes.includes(entry.name)) {
+                      entry.next.push(condition);
+                    }
+                  }
                 }
               }
-            }
-            break;
-          case "WhileStatement":
-            // console.log("WhileStatement", node.loc);
-            var conditions = defUse.findByLine(node.loc.start.line);
-            for (const condition of conditions) {
-              for (const entry of defUse.defUse) {
-                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
-                  condition.next.push(entry);
-                  if (untrackableNodes.includes(entry.name)) {
-                    entry.next.push(condition);
-                  } 
+              break;
+            case "WhileStatement":
+              // console.log("WhileStatement", node.loc);
+              var conditions = PDG.findByLine(node.loc.start.line);
+              for (const condition of conditions) {
+                for (const entry of PDG.defUse) {
+                  if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
+                    condition.next.push(entry);
+                    if (untrackableNodes.includes(entry.name)) {
+                      entry.next.push(condition);
+                    }
+                  }
                 }
               }
-            }
-            break;
-          case "SwitchStatement":
-            // console.log("SwitchStatement", node.loc);
-            var discriminants = defUse.findByLine(node.loc.start.line);
-            for (const discriminant of discriminants) {
-              for (const entry of defUse.defUse) {
-                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line && entry.operation == 'SwitchCase') {
-                  discriminant.next.push(entry);
+              break;
+            case "ForStatement":
+              // console.log("ForStatement", node.loc);
+              var conditions = PDG.findByLine(node.loc.start.line);
+              for (const condition of conditions) {
+                for (const entry of PDG.defUse) {
+                  if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
+                    condition.next.push(entry);
+                    if (untrackableNodes.includes(entry.name)) {
+                      entry.next.push(condition);
+                    }
+                  }
                 }
               }
-            }
-            break;
-          case "DoWhileStatement":
-            // console.log("DoWhileStatement", node.loc);
-            var conditions = defUse.findByLine(node.loc.end.line);
-            for (const condition of conditions) {
-              for (const entry of defUse.defUse) {
-                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
-                  condition.next.push(entry);
-                  if (untrackableNodes.includes(entry.name)) {
-                    entry.next.push(condition);
-                  } 
+              break;
+            case "SwitchStatement":
+              // console.log("SwitchStatement", node.loc);
+              var discriminants = PDG.findByLine(node.loc.start.line);
+              for (const discriminant of discriminants) {
+                for (const entry of PDG.defUse) {
+                  if (entry.line > node.loc.start.line && entry.line < node.loc.end.line && entry.operation == 'SwitchCase') {
+                    discriminant.next.push(entry);
+                  }
                 }
               }
-            }
-            break;
-          case "ForStatement": 
-            // console.log("ForStatement", node.loc);
-            var conditions = defUse.findByLine(node.loc.start.line);
-            for (const condition of conditions) {
-              for (const entry of defUse.defUse) {
-                if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
-                  condition.next.push(entry);
-                  if (untrackableNodes.includes(entry.name)) {
-                    entry.next.push(condition);
-                  } 
+              break;
+            case "DoWhileStatement":
+              // console.log("DoWhileStatement", node.loc);
+              var conditions = PDG.findByLine(node.loc.end.line);
+              for (const condition of conditions) {
+                for (const entry of PDG.defUse) {
+                  if (entry.line > node.loc.start.line && entry.line < node.loc.end.line) {
+                    condition.next.push(entry);
+                    if (untrackableNodes.includes(entry.name)) {
+                      entry.next.push(condition);
+                    }
+                  }
                 }
               }
-            }
-            break;
-          default:
-            break;
+              break;
+            default:
+              break;
+          }
         }
       },
       leave(node, parent, prop, index) { },
