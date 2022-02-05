@@ -67,7 +67,7 @@ const astHandler = require("./astHandler.js");
         location: iidToLocation(iid),
         line: parseInt(line)
       });
-      console.log("Conditional: ", line, result);
+      // console.log("Conditional: ", line, result);
     },
     invokeFunPre: function (iid, f, base, args) {
       if (f == console.log) {
