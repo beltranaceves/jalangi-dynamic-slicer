@@ -1,3 +1,4 @@
+/* jshint esversion: 8*/
 const jalangi = require("./jalangi2.js");
 
 (function () {
@@ -28,11 +29,12 @@ const jalangi = require("./jalangi2.js");
     args.inFile = inFile;
     args.outFile = outFile;
     args.lineNb = parseInt(lineNb),
-    args.analysis = ["analysis.js"];
+    args.analysis = ["../../src/js/sample_analyses/ChainedAnalyses.js", "../../src/js/runtime/SMemory.js", "analysis.js"];
+
 
     jalangi.analyze(args);
     console.log("running slice.js for arguments: " + inFile, outFile, lineNb);
-    //node slice.js --inFile example.js --outFile exampleFix.js --lineNb 2  
+    //node slice.js --inFile example.js --outFile exampleFix.js --lineNb 8
     //node slice.js --inFile ../testcases/milestone2/a8_in.js --outFile ../testcases/milestone2/a8_predicted_out.js --lineNb 8
   }
 
