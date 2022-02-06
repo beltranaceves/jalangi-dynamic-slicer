@@ -1,0 +1,27 @@
+{
+  "name": "jalagi-dynamic-slicer",
+  "version": "1.0.0",
+  "description": "Proof of concept backwards dynamic slicer writen with the help of Jalangi2",
+  "main": "scripts/slice.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beltranaceves/jalangi-dynamic-slicer.git"
+  },
+  "keywords": [
+    "jalagi2"
+  ],
+  "author": "Beltrán Aceves Gil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/beltranaceves/jalangi-dynamic-slicer/issues"
+  },
+  "homepage": "https://github.com/beltranaceves/jalangi-dynamic-slicer#readme",
+  "dependencies": {
+    "@meriyah-utils/walker": "^1.0.2",
+    "acorn": "^7.4.1",
+    "argparse": "^2.0.1",
+    "escodegen": "^2.0.0",
+    "esotope": "^1.4.5",
+    "jalangi2": "^0.2.6"
+  }
+}
