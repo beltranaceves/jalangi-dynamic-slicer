@@ -149,7 +149,7 @@ function PDG() {
           break;
         case 'get':
           /*
-          Find a read in the same line with the same parend and read.next.push(get)
+          Find a read in the same line with the same parent and read.next.push(get)
           Find a write in the same line and get.next.push(write)
             if get is an object add synonim to read and get
           */
@@ -172,7 +172,8 @@ function PDG() {
           break;
         case 'put':
           /*
-          Find a read in the same line who is the parent and put.next.push(read) then treat read as write
+          Find a get after put.line with the same parent and put.next.push(put)
+          Find a read after put.line with the same parent and put.next.push(read)
            */
           var put = entry;
           for (const entry of this.defUse) {
